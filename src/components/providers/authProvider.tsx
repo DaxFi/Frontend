@@ -1,72 +1,36 @@
 "use client";
 
 import { auth } from "@/lib/firebase";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  User,
-} from "firebase/auth";
-import { wonderTestnet } from "@/config/chains";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 
 const AuthContext = createContext<{
-  user: any | null;
-  address: string | null;
+  user: User | null;
   signIn?: () => Promise<void>;
   signOut?: () => Promise<void>;
-}>({ user: null, address: null });
+}>({ user: null });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<any | null>(null);
-  const [address, setAddress] = useState("");
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (firebaseUser: User | null) => {
-        if (firebaseUser) {
-          setUser(firebaseUser);
-          localStorage.setItem("daxfi:user", JSON.stringify(firebaseUser));
-          router.push("/dashboard");
-        } else {
-          setUser(null);
-          localStorage.removeItem("daxfi:user");
-          router.push("/login");
-        }
-      },
-    );
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    async function init() {
-      const account = privateKeyToAccount(
-        "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      ); // MOCK
-      const walletClient = createWalletClient({
-        account,
-        chain: wonderTestnet,
-        transport: http("http://rpc.testnet.wonderchain.org/"),
-      });
-
-      const { address } = walletClient.account;
-
-      setAddress(address);
-
-      if (!user) {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: User | null) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        localStorage.setItem("daxfi:user", JSON.stringify(firebaseUser));
+        router.push("/dashboard");
+      } else {
+        setUser(null);
+        localStorage.removeItem("daxfi:user");
         router.push("/login");
       }
-    }
+    });
 
-    init();
-  }, []);
+    return () => unsubscribe();
+  }, [router]);
 
   const signIn = async () => {
     const provider = new GoogleAuthProvider();
@@ -80,11 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     await auth.signOut();
   };
-  return (
-    <AuthContext.Provider value={{ user, address, signIn, signOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FaCheckCircle, FaExclamationTriangle, FaClock } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
-export default function TransactionStatusPage() {
+function TransactionStatusContent() {
   const router = useRouter();
   const params = useSearchParams();
   const state = params.get("state") || "success";
@@ -36,8 +37,7 @@ export default function TransactionStatusPage() {
     },
   };
 
-  const status =
-    STATUS_MAP[state as keyof typeof STATUS_MAP] || STATUS_MAP.success;
+  const status = STATUS_MAP[state as keyof typeof STATUS_MAP] || STATUS_MAP.success;
 
   const handleClick = () => {
     if (state === "success") {
@@ -61,5 +61,15 @@ export default function TransactionStatusPage() {
         </Button>
       </div>
     </main>
+  );
+}
+
+export default function TransactionStatusPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-16">...</div>}>
+      {" "}
+      {/* TODO: Loading state */}
+      <TransactionStatusContent />
+    </Suspense>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -9,6 +10,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const t = useTranslations("dashboard");
+  const { signOut } = useAuth();
 
   return (
     <main
@@ -62,6 +64,16 @@ export default function HomePage() {
             className="text-blue-600 border-blue-600 hover:bg-blue-50"
           >
             {t("sendFirstTransfer")}
+          </Button>
+        </div>
+        <div>
+          {/* Temporary logout button for testing */}
+          <Button
+            variant="outline"
+            onClick={signOut}
+            className="mt-6 text-red-600 border-red-600 hover:bg-red-50"
+          >
+            {t("logout")}
           </Button>
         </div>
       </div>

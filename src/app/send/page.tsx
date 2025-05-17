@@ -22,9 +22,7 @@ export default function SendPage() {
         </button>
 
         {/* Header */}
-        <h1 className="text-2xl font-semibold text-center mb-8">
-          {t("sendFunds")}
-        </h1>
+        <h1 className="text-2xl font-semibold text-center mb-8">{t("sendFunds")}</h1>
 
         <form className="space-y-6">
           {/* To */}
