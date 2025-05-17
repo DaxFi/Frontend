@@ -43,9 +43,6 @@
     "node": "^20.17.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "prettier --write",
-      "git add"
-    ]
-  }  
+    "*.{ts,tsx,js,jsx}": "prettier --write"
+  }
 }
