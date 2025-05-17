@@ -1,0 +1,46 @@
+{
+  "appName": "DaxFi",
+  "login": {
+    "title": "Send stablecoin to anyone, anywhere",
+    "subtitle": "No wallet needed, just sign in.",
+    "loginWithGoogle": "Continue with Google",
+    "loginWithEmail": "Continue with email"
+  },
+  "dashboard": {
+    "addFunds": "Add funds",
+    "send": "Send",
+    "request": "Request",
+    "recentActivity": "Recent activity",
+    "noRecentActivity": "You haven't made any transactions yet.",
+    "sendFirstTransfer": "Send your first transfer"
+  },
+  "send": {
+    "addNote": "Add a note",
+    "amount": "Amount",
+    "to": "To",
+    "toPlaceholder": "@handle, email or phone",
+    "optionalMessage": "Message (optional)",
+    "reviewAndSend": "Review & Send",
+    "back": "Back",
+    "sendFunds": "Send funds"
+  },
+  "confirmTransaction": {
+    "confirmPayment": "Confirm payment",
+    "to": "To",
+    "amount": "Amount",
+    "fees": "Fees",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "confirmation": {
+    "successTitle": "Payment sent",
+    "successMessage": "You have sent { amount } to { recipient }",
+    "okButton": "OK",
+    "pendingTitle": "Transaction pending",
+    "pendingMessage": "We're confirming your payment...",
+    "refreshButton": "Refresh",
+    "failedTitle": "Payment failed",
+    "failedMessage": "We couldn't send your payment. Please try again.",
+    "retryButton": "Retry"
+  }
+}
