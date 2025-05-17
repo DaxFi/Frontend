@@ -1,14 +1,21 @@
-name: Deploy to Firebase Hosting on merge
+name: Deploy to Firebase Hosting on dev push
+
 on:
   push:
     branches:
       - dev
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
+      # Step 1: Install dependencies
+      - run: npm ci --legacy-peer-deps
+
+      # Step 2: Inject .env from GitHub Secrets
       - name: Inject .env from secrets
         run: |
           echo "WONDER_RPC_URL=${{ secrets.WONDER_RPC_URL }}" >> .env
@@ -21,7 +28,10 @@ jobs:
           echo "NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
           echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}" >> .env
 
-      - run: npm ci --legacy-peer-deps && npm run build --legacy-peer-deps
+      # Step 3: Build
+      - run: npm run build --legacy-peer-deps
+
+      # Step 4: Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
