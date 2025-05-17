@@ -14,7 +14,7 @@ import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 const AuthContext = createContext<{
-  user: any | null;
+  user: unknown | null;
   address: string | null;
   signIn?: () => Promise<void>;
   signOut?: () => Promise<void>;
@@ -23,7 +23,7 @@ const AuthContext = createContext<{
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<unknown | null>(null);
   const [address, setAddress] = useState("");
 
   useEffect(() => {

@@ -13,7 +13,7 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      "max-len": ["warn", { code: 100 }],
+      "max-len": ["warn", { code: 150 }],
     },
   },
 ];
