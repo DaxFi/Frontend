@@ -7,13 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@aa-sdk/core": "^4.32.0",
     "@material-tailwind/react": "^2.1.10",
     "@wonderchain/sdk": "^1.0.19",
     "alchemy-sdk": "^3.5.8",
+    "ethers": "^6.14.1",
     "firebase": "^11.7.3",
     "firebase-admin": "^13.4.0",
     "firebase-functions": "^6.3.2",
@@ -34,11 +36,16 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.0.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "engines": {
     "node": "^20.17.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": "prettier --write"
   }
 }

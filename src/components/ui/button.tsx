@@ -17,13 +17,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       outline: "border border-gray-300 text-gray-700 hover:bg-gray-100",
     };
 
-    return (
-      <button
-        ref={ref}
-        className={cn(base, variants[variant], className)}
-        {...props}
-      />
-    );
+    return <button ref={ref} className={cn(base, variants[variant], className)} {...props} />;
   },
 );
 

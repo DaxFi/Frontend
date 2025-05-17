@@ -1,5 +1,8 @@
-import { createSmartAccountClient, SmartContractAccount, 
-  SmartAccountClient as SmartAccountClientType } from "@aa-sdk/core";
+import {
+  createSmartAccountClient,
+  type SmartAccountClient as BaseClient,
+  type SmartContractAccount,
+} from "@aa-sdk/core";
 import { http } from "viem";
 import { wonderTestnet } from "@/config/chains";
 import provider, { RPC_URL } from "../provider";
@@ -15,7 +18,7 @@ export async function getSmartAccountClient(account: SmartContractAccount) {
 }
 
 export default class SmartAccountClient {
-  private client: SmartAccountClientType;
+  private client: BaseClient;
 
   constructor(account: SmartContractAccount) {
     this.client = createSmartAccountClient({

@@ -12,7 +12,8 @@
     "request": "Request",
     "recentActivity": "Recent activity",
     "noRecentActivity": "You haven't made any transactions yet.",
-    "sendFirstTransfer": "Send your first transfer"
+    "sendFirstTransfer": "Send your first transfer",
+    "logout": "Logout"
   },
   "send": {
     "addNote": "Add a note",
