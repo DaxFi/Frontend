@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # Step 1: Install dependencies
-      - run: npm ci --legacy-peer-deps
+      - run: pnpm install
 
       # Step 2: Inject .env from GitHub Secrets
       - name: Inject .env from secrets
@@ -28,11 +28,8 @@ jobs:
           echo "NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
           echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}" >> .env
 
-      - name: Debug .env contents
-        run: cat .env
-
       # Step 3: Build
-      - run: npm run build --legacy-peer-deps
+      - run: pnpm run build
 
       # Step 4: Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
