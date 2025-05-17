@@ -15,6 +15,9 @@ jobs:
       # Step 1: Install dependencies
       - run: npm ci --legacy-peer-deps
 
+      - name: Debug .env contents
+        run: cat .env
+
       # Step 2: Inject .env from GitHub Secrets
       - name: Inject .env from secrets
         run: |
