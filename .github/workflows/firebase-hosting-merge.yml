@@ -12,6 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Step 0: Install pnpm (Github actions don't have it by default)
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+
       # Step 1: Install dependencies
       - run: pnpm install
 
