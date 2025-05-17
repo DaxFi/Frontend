@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DaxFi Frontend
 
-## Getting Started
+This is the frontend for DaxFi, a Next.js app built using [`pnpm`](https://pnpm.io) and [`nvm`](https://github.com/nvm-sh/nvm) to ensure consistent environments across developers and CI.
 
-First, run the development server:
+## ⚙️ Getting Started
+
+### 1. Clone the repo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/DaxFi/Frontend.git
+cd Frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Use the correct Node version
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project uses `.nvmrc` to lock the Node.js version:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+nvm use
+```
 
-## Learn More
+If you don't have `nvm` installed, follow: https://github.com/nvm-sh/nvm#installing-and-updating
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Install dependencies (with `pnpm`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> ❗ Do **not** use `npm install` or `yarn install`. This project uses `pnpm` exclusively.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm install
+```
 
-## Deploy on Vercel
+### 4. Start the development server
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Visit [http://localhost:3000](http://localhost:3000) to see the app in your browser.
+
+## ✏️ Development Notes
+
+- Styling uses TailwindCSS + Material Tailwind
+- Fonts are loaded via [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
+
+## 📚 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [pnpm Documentation](https://pnpm.io/motivation)
+
+## 🚀 Deployment
+
+- TODO
+
+## 🛑 Troubleshooting
+
+- Do **not** use `npm` — it will generate a `package-lock.json` and break workspace compatibility
+- If you see a `"workspace:"` error, you're probably using the wrong package manager
