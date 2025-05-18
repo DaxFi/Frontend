@@ -14,7 +14,7 @@ const eslintConfig = [
   {
     files: ["**/*.ts", "**/*.js"],
     rules: {
-      "max-len": ["warn", { code: 100 }],
+      "max-len": ["warn", { code: 150 }],
     },
   },
   {
