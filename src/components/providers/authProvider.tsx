@@ -1,49 +1,57 @@
 "use client";
 
-import { auth } from "@/lib/firebase";
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect } from "react";
+import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
+import type { User } from "@account-kit/signer";
+
+type AuthMethod = "google" | "email";
 
 const AuthContext = createContext<{
   user: User | null;
-  signIn?: () => Promise<void>;
+  signIn?: (method: AuthMethod) => Promise<void>;
   signOut?: () => Promise<void>;
 }>({ user: null });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<User | null>(null);
+  const { isConnected, isDisconnected, isAuthenticating } = useSignerStatus();
+  const { logout } = useLogout({
+    onSuccess: () => {
+      router.push("/login");
+    },
+  });
+  const { authenticate } = useAuthenticate();
+  const user = useUser();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: User | null) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        localStorage.setItem("daxfi:user", JSON.stringify(firebaseUser));
-        router.push("/dashboard");
-      } else {
-        setUser(null);
-        localStorage.removeItem("daxfi:user");
-        router.push("/login");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  const signIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (err) {
-      console.error("[SignIn Error]", err);
+    if (isDisconnected) {
+      router.push("/login");
     }
+    if (isConnected) {
+      router.push("/dashboard");
+    } else if (isAuthenticating) {
+      router.push("/");
+    }
+  }, [isAuthenticating, isConnected, isDisconnected, router]);
+
+  const handleGooglePopupLogin = () => {
+    authenticate({
+      type: "oauth",
+      authProviderId: "google",
+      mode: "popup",
+    });
+  };
+
+  const signIn = async (method: string) => {
+    if (method === "google") handleGooglePopupLogin();
   };
 
   const signOut = async () => {
-    await auth.signOut();
+    await logout();
   };
+
   return <AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 

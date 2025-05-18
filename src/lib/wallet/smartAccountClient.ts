@@ -4,13 +4,13 @@ import {
   type SmartContractAccount,
 } from "@aa-sdk/core";
 import { http } from "viem";
-import { wonderTestnet } from "@/config/chains";
+import { baseWonderTestnet } from "@/config/chains";
 import provider, { RPC_URL } from "../provider";
 
 export async function getSmartAccountClient(account: SmartContractAccount) {
   const client = await createSmartAccountClient({
     account,
-    chain: wonderTestnet,
+    chain: baseWonderTestnet,
     transport: http(RPC_URL),
   });
 
@@ -23,7 +23,7 @@ export default class SmartAccountClient {
   constructor(account: SmartContractAccount) {
     this.client = createSmartAccountClient({
       account,
-      chain: wonderTestnet,
+      chain: baseWonderTestnet,
       transport: http(RPC_URL),
     });
   }

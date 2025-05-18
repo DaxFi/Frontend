@@ -5,12 +5,35 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { FaDollarSign, FaPaperPlane, FaDownload } from "react-icons/fa";
+import { useAccount } from "@account-kit/react";
+import { useEffect, useState } from "react";
+import { createPublicClient, http } from "viem";
+import { baseWonderTestnet } from "@/config/chains";
+import { RPC_URL } from "@/lib/provider";
+import { formatEthAmount, formatEthToUSD } from "@/lib/utils";
 
 export default function HomePage() {
   const router = useRouter();
 
   const t = useTranslations("dashboard");
   const { signOut } = useAuth();
+
+  const { account, address } = useAccount({
+    type: "LightAccount",
+  });
+
+  const [balance, setBalance] = useState<bigint | null>(null);
+
+  useEffect(() => {
+    console.log("debug: account", account);
+    const client = createPublicClient({
+      chain: baseWonderTestnet,
+      transport: http(RPC_URL),
+    });
+
+    client.getBalance({ address: address! }).then(setBalance);
+    console.log("debug: balance", formatEthAmount(balance || BigInt(0)));
+  }, [account, balance, address]);
 
   return (
     <main
@@ -30,8 +53,8 @@ export default function HomePage() {
 
         {/* Balance */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-2">US$1,024</h2>
-          <p className="text-sm text-gray-500">wUSDC ≈ 1 USD</p>
+          <h2 className="text-4xl font-bold mb-2">{formatEthToUSD(balance || BigInt(0))}</h2>
+          <p className="text-sm text-gray-500">{formatEthAmount(balance || BigInt(0))}</p>
         </div>
 
         {/* Actions */}

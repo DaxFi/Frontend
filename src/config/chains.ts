@@ -1,6 +1,7 @@
 import { defineChain } from "viem";
+import { defineAlchemyChain } from "@account-kit/infra";
 
-export const wonderTestnet = defineChain({
+export const baseWonderTestnet = defineChain({
   id: 96371,
   name: "Wonder Chain Testnet",
   nativeCurrency: {
@@ -10,7 +11,7 @@ export const wonderTestnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["http://rpc.testnet.wonderchain.org/"],
+      http: ["http://localhost:3000/api/rpc"],
     },
   },
   blockExplorers: {
@@ -20,4 +21,14 @@ export const wonderTestnet = defineChain({
     },
   },
   testnet: true,
+});
+
+export const wonderTestnetAlchemy = defineAlchemyChain({
+  chain: {
+    ...baseWonderTestnet,
+    rpcUrls: {
+      ...baseWonderTestnet.rpcUrls,
+    },
+  },
+  rpcBaseUrl: "http://localhost:3000/api/rpc",
 });
