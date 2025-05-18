@@ -11,7 +11,7 @@ export const baseWonderTestnet = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["http://localhost:3000/api/rpc"],
+      http: ["/api/wonder-rpc"],
     },
   },
   blockExplorers: {
@@ -30,5 +30,5 @@ export const wonderTestnetAlchemy = defineAlchemyChain({
       ...baseWonderTestnet.rpcUrls,
     },
   },
-  rpcBaseUrl: "http://localhost:3000/api/rpc",
+  rpcBaseUrl: "/api/wonder-rpc",
 });

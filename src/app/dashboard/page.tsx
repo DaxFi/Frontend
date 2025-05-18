@@ -31,7 +31,7 @@ export default function HomePage() {
       transport: http(RPC_URL),
     });
 
-    client.getBalance({ address: address! }).then(setBalance);
+    if (address) client.getBalance({ address: address }).then(setBalance);
     console.log("debug: balance", formatEthAmount(balance || BigInt(0)));
   }, [account, balance, address]);
 
