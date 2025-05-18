@@ -33,7 +33,7 @@ export default function LoginPage() {
 
         <div className="flex flex-col gap-4">
           <Button
-            onClick={signIn}
+            onClick={() => signIn?.("google")}
             variant="default"
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center 
                 justify-center gap-2"
