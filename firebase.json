@@ -17,7 +17,14 @@
     }
   ],
   "hosting": {
-    "public": "out",
+    "site": "daxfi-7db30d",
+    "public": "public",
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "nextApp"
+      }
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

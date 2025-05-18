@@ -1,9 +1,9 @@
-name: Deploy to Firebase Hosting on dev push
+name: Deploy Next.js SSR App to Firebase on dev push
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build_and_deploy:
@@ -12,14 +12,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Step 0: Install pnpm (Github actions don't have it by default)
+      # Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # Step 1: Install dependencies
+      # Install project dependencies
       - run: pnpm install
 
-      # Step 2: Inject .env from GitHub Secrets
+      # Inject .env from secrets
       - name: Inject .env from secrets
         run: |
           echo "WONDER_RPC_URL=${{ secrets.WONDER_RPC_URL }}" >> .env
@@ -33,13 +33,12 @@ jobs:
           echo "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }}" >> .env
           echo "NEXT_PUBLIC_ALCHEMY_API_KEY=${{ secrets.ALCHEMY_API_KEY }}" >> .env
 
-      # Step 3: Build
-      - run: pnpm run build
+      # Build Next.js app
+      - run: pnpm build
 
-      # Step 4: Deploy to Firebase Hosting
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DAXFI_7DB30 }}
-          channelId: live
-          projectId: daxfi-7db30
+      # Install Firebase CLI
+      - run: npm install -g firebase-tools
+
+      # Deploy Hosting + Functions
+      - name: Deploy to Firebase
+        run: firebase deploy --project daxfi-7db30 --only hosting,functions --token "${{ secrets.FIREBASE_TOKEN }}"
