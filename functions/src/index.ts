@@ -1,4 +1,3 @@
-import * as functions from "firebase-functions";
 import { default as next } from "next";
 import { onRequest } from "firebase-functions/v2/https";
 
