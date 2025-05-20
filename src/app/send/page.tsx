@@ -38,7 +38,7 @@ export default function SendPage() {
       .catch((error) => {
         console.error("Transfer failed:", error);
         router.push("/status?state=error");
-    });
+      });
   };
 
   return (

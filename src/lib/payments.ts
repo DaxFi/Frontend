@@ -20,13 +20,9 @@ export async function sendPayment({
   message: string;
   amountEth: string;
 }) {
-  
   const contract = new Contract(CONTRACT_ADDRESS, paymentsAbi.abi);
 
-  const data = contract.interface.encodeFunctionData("sendPayment", [
-    to,
-    message,
-  ]) as `0x${string}`;
+  const data = contract.interface.encodeFunctionData("sendPayment", [to, message]) as `0x${string}`;
 
   console.log("debug: data", data);
   console.log("debug: from", from);
@@ -46,7 +42,7 @@ export async function sendPayment({
       target: CONTRACT_ADDRESS,
       data,
       value: parseEther(amountEth),
-    }
+    },
   });
 
   console.log("debug: tx", tx);

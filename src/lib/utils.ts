@@ -3,7 +3,6 @@ export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-
 const ETH_PRICE_USD = 2560.27; // TODO: replace with live price
 
 export function formatEthAmount(amount: bigint, decimals: number = 18): string {
