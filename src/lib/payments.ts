@@ -1,38 +1,56 @@
-import { Contract, parseEther } from "ethers";
-import { Provider, Wallet } from "zksync-ethers";
+import { parseEther } from "ethers";
+import { Contract } from "zksync-ethers";
 import paymentsAbi from "@/abi/payments.json";
-import provider from "./provider";
+import { type AlchemySigner, type LightAccount } from "@account-kit/core";
+import { createSmartAccountClient } from "@aa-sdk/core";
+import { baseWonderTestnet, wonderTestnetAlchemy } from "@/config/chains";
+import { http } from "viem";
+import { RPC_URL } from "./provider";
 
-const CONTRACT_ADDRESS = "0xaf53c48a4eba2C5C4c8f41f26cB1bA127308847F";
-
-async function getPaymentsContract(signerOrProvider?: Wallet | Provider) {
-  const connected = signerOrProvider || provider;
-
-  const contract = new Contract(CONTRACT_ADDRESS, paymentsAbi.abi, connected);
-
-  return contract;
-}
+const CONTRACT_ADDRESS = "0xcD7b8b601eD648eaDAcCd272A0bAdC34A018Fd6c";
 
 export async function sendPayment({
-  signer,
+  from,
   to,
   message,
   amountEth,
 }: {
-  signer: Wallet;
+  from: LightAccount<AlchemySigner>;
   to: string;
   message: string;
   amountEth: string;
 }) {
-  const contract = await getPaymentsContract(signer);
+  
+  const contract = new Contract(CONTRACT_ADDRESS, paymentsAbi.abi);
 
-  const tx = await contract.sendPayment(to, message, {
-    value: parseEther(amountEth),
+  const data = contract.interface.encodeFunctionData("sendPayment", [
+    to,
+    message,
+  ]) as `0x${string}`;
+
+  console.log("debug: data", data);
+  console.log("debug: from", from);
+  console.log("debug: to", to);
+  console.log("debug: message", message);
+  console.log("debug: amount", amountEth);
+  console.log("debug: contract", contract);
+
+  const client = await createSmartAccountClient({
+    chain: wonderTestnetAlchemy,
+    transport: http(RPC_URL),
+    account: from,
   });
 
-  console.log("[Tx] Sent:", tx.hash);
+  const tx = await client.sendUserOperation({
+    uo: {
+      target: CONTRACT_ADDRESS,
+      data,
+      value: parseEther(amountEth),
+    }
+  });
 
-  const receipt = await tx.wait();
+  console.log("debug: tx", tx);
+  console.log("debug: client", client);
 
-  return receipt;
+  return tx;
 }

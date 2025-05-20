@@ -19,7 +19,7 @@
     "addNote": "Add a note",
     "amount": "Amount",
     "to": "To",
-    "toPlaceholder": "@handle, email or phone",
+    "toPlaceholder": "@handle, email or wallet address",
     "optionalMessage": "Message (optional)",
     "reviewAndSend": "Review & Send",
     "back": "Back",

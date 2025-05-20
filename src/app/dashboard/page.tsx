@@ -32,8 +32,7 @@ export default function HomePage() {
     });
 
     if (address) client.getBalance({ address: address }).then(setBalance);
-    console.log("debug: balance", formatEthAmount(balance || BigInt(0)));
-  }, [account, balance, address]);
+  }, [account]);
 
   return (
     <main

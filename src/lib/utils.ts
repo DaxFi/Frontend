@@ -3,6 +3,9 @@ export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+
+const ETH_PRICE_USD = 2560.27; // TODO: replace with live price
+
 export function formatEthAmount(amount: bigint, decimals: number = 18): string {
   const factor = BigInt(10) ** BigInt(decimals);
   const integerPart = amount / factor;
@@ -20,11 +23,21 @@ export function formatEthAmount(amount: bigint, decimals: number = 18): string {
 
 export function formatEthToUSD(
   amount: bigint,
-  ethPriceUSD: number = 2560.27,
+  ethPriceUSD: number = ETH_PRICE_USD,
   decimals: number = 18,
 ): string {
   const factor = BigInt(10) ** BigInt(decimals);
   const ethAmount = Number(amount) / Number(factor);
   const usdValue = ethAmount * ethPriceUSD;
   return `US$${usdValue.toFixed(2)}`;
+}
+
+export function convertUSDToEth(
+  amount: number,
+  ethPriceUSD: number = ETH_PRICE_USD,
+  decimals: number = 18,
+): string {
+  const factor = BigInt(10) ** BigInt(decimals);
+  const ethAmount = amount / ethPriceUSD;
+  return BigInt(Math.round(ethAmount * Number(factor))).toString();
 }

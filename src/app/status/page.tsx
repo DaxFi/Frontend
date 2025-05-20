@@ -43,7 +43,7 @@ function TransactionStatusContent() {
     if (state === "success") {
       router.push("/dashboard");
     } else {
-      router.refresh();
+      router.back();
     }
   };
 
