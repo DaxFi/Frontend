@@ -3,7 +3,7 @@ import { Contract } from "zksync-ethers";
 import paymentsAbi from "@/abi/payments.json";
 import { type AlchemySigner, type LightAccount } from "@account-kit/core";
 import { createSmartAccountClient } from "@aa-sdk/core";
-import { baseWonderTestnet, wonderTestnetAlchemy } from "@/config/chains";
+import { wonderTestnetAlchemy } from "@/config/chains";
 import { http } from "viem";
 import { RPC_URL } from "./provider";
 
