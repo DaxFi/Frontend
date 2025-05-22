@@ -37,7 +37,8 @@ export default function ConfirmRequestPage() {
         {/* Title */}
         <h1 className="text-2xl font-semibold">Request Funds</h1>
         <p className="text-sm text-gray-500">
-          Show the QR code on your screen, copy and paste the code, or send the link to who is paying you.
+          Show the QR code on your screen, copy and paste the code, or send the link to who is
+          paying you.
         </p>
 
         {/* QR Code */}
@@ -47,38 +48,46 @@ export default function ConfirmRequestPage() {
 
         {/* Summary */}
         <div className="text-sm space-y-1">
-          <p><strong>Amount:</strong> ${amount}</p>
-          <p><strong>To:</strong> {recipient}</p>
-          {message && <p><strong>Message:</strong> {message}</p>}
+          <p>
+            <strong>Amount:</strong> ${amount}
+          </p>
+          <p>
+            <strong>To:</strong> {recipient}
+          </p>
+          {message && (
+            <p>
+              <strong>Message:</strong> {message}
+            </p>
+          )}
         </div>
 
         {/* Buttons */}
         <div className="space-y-3">
-        <Button
+          <Button
             onClick={handleCopy}
             className={`w-full ${
-                copied ? "bg-green-600" : "bg-teal-600"
+              copied ? "bg-green-600" : "bg-teal-600"
             } hover:bg-teal-700 text-white`}
-        >
+          >
             {/* classname margin left 8px: margi */}
             {copied ? <FaCheck className="mr-2" /> : null}
             {copied ? "  Copied!" : "Copy code"}
-        </Button>
+          </Button>
 
-        <Button
+          <Button
             variant="default"
             className="w-full bg-teal-600 hover:bg-teal-700 text-white"
             onClick={() => {
-                const query = new URLSearchParams({
+              const query = new URLSearchParams({
                 amount: amount || "",
                 message: message || "",
-                }).toString();
+              }).toString();
 
-                router.push(`/request/email?${query}`);
+              router.push(`/request/email?${query}`);
             }}
-        >
+          >
             Send Request
-        </Button>
+          </Button>
         </div>
       </div>
     </main>

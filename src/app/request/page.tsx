@@ -71,10 +71,7 @@ export default function RequestPage() {
           </div>
 
           {/* Submit */}
-          <Button
-            type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-          >
+          <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white">
             Create Request
           </Button>
         </form>

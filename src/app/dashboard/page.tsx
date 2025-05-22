@@ -12,7 +12,6 @@ import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
 import { formatEthAmount, formatEthToUSD } from "@/lib/utils";
 
-
 export default function HomePage() {
   const router = useRouter();
 
