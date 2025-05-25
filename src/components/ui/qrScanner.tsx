@@ -14,7 +14,7 @@ export default function QrScanner({ onScan }: { onScan: (result: string) => void
         },
         (error) => {
           console.warn("Scan error", error);
-        }
+        },
       )
       .catch(console.error);
 
