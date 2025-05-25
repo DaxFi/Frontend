@@ -10,6 +10,8 @@ function TransactionStatusContent() {
   const router = useRouter();
   const params = useSearchParams();
   const state = params.get("state") || "success";
+  const to = params.get("to");
+  const amount = params.get("amount");
 
   const t = useTranslations("confirmation");
 
@@ -18,8 +20,8 @@ function TransactionStatusContent() {
       icon: <FaCheckCircle className="text-green-500 text-5xl mb-4" />,
       title: t("successTitle"),
       message: t("successMessage", {
-        amount: "$150.00",
-        recipient: "johndoe123@example.com",
+        amount: `$${amount!}`,
+        recipient: to!,
       }),
       button: t("okButton"),
     },

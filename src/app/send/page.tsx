@@ -4,11 +4,33 @@ import { useRouter } from "next/navigation";
 import { FaUser, FaDollarSign } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useRef } from "react";
 
 export default function SendPage() {
   const router = useRouter();
 
   const t = useTranslations("send");
+
+  const recipientRef = useRef<HTMLInputElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleSubmit = () => {
+    const recipient = recipientRef.current?.value;
+    const amount = amountRef.current?.value;
+    const message = messageRef.current?.value;
+
+    if (!recipient || !amount) {
+      alert(t("noAmountOrRecipientError"));
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set("recipient", recipient);
+    params.set("amount", amount);
+    params.set("message", message || "");
+    router.push(`/confirm-transaction?${params.toString()}`);
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
@@ -37,6 +59,7 @@ export default function SendPage() {
               <input
                 id="to"
                 type="text"
+                ref={recipientRef}
                 placeholder={t("toPlaceholder")}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
               />
@@ -54,6 +77,7 @@ export default function SendPage() {
               <input
                 id="amount"
                 type="number"
+                ref={amountRef}
                 placeholder="0.00"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
               />
@@ -66,6 +90,7 @@ export default function SendPage() {
             </label>
             <textarea
               id="message"
+              ref={messageRef}
               placeholder={t("addNote")}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
@@ -75,7 +100,7 @@ export default function SendPage() {
           <Button
             type="button"
             className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-            onClick={() => router.push("/confirm-transaction")}
+            onClick={handleSubmit}
           >
             {t("reviewAndSend")}
           </Button>

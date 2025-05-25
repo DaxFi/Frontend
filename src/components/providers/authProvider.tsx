@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect } from "react";
 import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
 import type { User } from "@account-kit/signer";
@@ -15,6 +15,7 @@ const AuthContext = createContext<{
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const { isConnected, isDisconnected, isAuthenticating } = useSignerStatus();
   const { logout } = useLogout({
@@ -29,9 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDisconnected) {
       router.push("/login");
     }
-    if (isConnected) {
+    if (isConnected && pathname === "/") {
       router.push("/dashboard");
-    } else if (isAuthenticating) {
+    } else if (isAuthenticating && pathname === "/") {
       router.push("/");
     }
   }, [isAuthenticating, isConnected, isDisconnected, router]);

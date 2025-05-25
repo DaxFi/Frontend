@@ -8,6 +8,7 @@
   },
   "dashboard": {
     "addFunds": "Add funds",
+    "fetchingBalance": "Fetching balance...",
     "send": "Send",
     "request": "Request",
     "recentActivity": "Recent activity",
@@ -23,7 +24,8 @@
     "optionalMessage": "Message (optional)",
     "reviewAndSend": "Review & Send",
     "back": "Back",
-    "sendFunds": "Send funds"
+    "sendFunds": "Send funds",
+    "noAmountOrRecipientError": "Please enter an amount and recipient"
   },
   "confirmTransaction": {
     "confirmPayment": "Confirm payment",
@@ -43,5 +45,12 @@
     "failedTitle": "Payment failed",
     "failedMessage": "We couldn't send your payment. Please try again.",
     "retryButton": "Retry"
+  },
+  "pay": {
+    "title": "Pay",
+    "pasteLabel": "Paste QR Code",
+    "placeholder": "Code",
+    "pay": "Pay",
+    "scanPrompt": "Scan QR code"
   }
 }

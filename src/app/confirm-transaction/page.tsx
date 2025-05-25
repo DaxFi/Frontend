@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
@@ -9,8 +9,11 @@ export default function ConfirmSendPage() {
 
   const t = useTranslations("confirmTransaction");
 
+  const params = useSearchParams();
+  const { to, amount } = Object.fromEntries(params.entries());
+
   const handleConfirm = () => {
-    router.push("/status?state=success");
+    router.push(`/status?state=success&to=${to}&amount=${amount}`);
   };
 
   const handleCancel = () => {
@@ -26,8 +29,8 @@ export default function ConfirmSendPage() {
         <h1 className="text-2xl font-semibold mb-8">{t("confirmPayment")}</h1>
 
         <div className="text-left space-y-4 mb-8">
-          <InfoRow label={t("to")} value="johndoe123@example.com" />
-          <InfoRow label={t("amount")} value="$150" />
+          <InfoRow label={t("to")} value={to} />
+          <InfoRow label={t("amount")} value={`$${amount}`} />
           <InfoRow label={t("fees")} value="$0.45" />
         </div>
 

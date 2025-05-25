@@ -4,7 +4,7 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { FaDollarSign, FaPaperPlane, FaDownload } from "react-icons/fa";
+import { FaDollarSign, FaPaperPlane, FaDownload, FaQrcode } from "react-icons/fa";
 import { useAccount } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
@@ -53,12 +53,21 @@ export default function HomePage() {
 
         {/* Balance */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-2">{formatEthToUSD(balance || BigInt(0))}</h2>
-          <p className="text-sm text-gray-500">{formatEthAmount(balance || BigInt(0))}</p>
+          {balance === null ? (
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+              <p className="text-sm text-gray-400 mt-4">{t("fetchingBalance")}</p>
+            </div>
+          ) : (
+            <>
+              <h2 className="text-4xl font-bold mb-2">{formatEthToUSD(balance)}</h2>
+              <p className="text-sm text-gray-500">{formatEthAmount(balance)}</p>
+            </>
+          )}
         </div>
 
         {/* Actions */}
-        <div className="grid grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <DashboardAction
             icon={<FaDollarSign size={20} />}
             label={t("addFunds")}
@@ -73,6 +82,11 @@ export default function HomePage() {
             icon={<FaDownload size={20} />}
             label={t("request")}
             onClick={() => router.push("/request")}
+          />
+          <DashboardAction
+            icon={<FaQrcode size={20} />}
+            label="Pay"
+            onClick={() => router.push("/pay")}
           />
         </div>
 

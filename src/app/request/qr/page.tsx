@@ -10,10 +10,13 @@ export default function ConfirmRequestPage() {
   const router = useRouter();
   const params = useSearchParams();
 
+  const baseUrl =
+    typeof window !== "undefined" ? window.location.origin : "https://daxfi.vercel.app";
+
   const amount = params.get("amount") || "0";
   const message = params.get("message") || "";
   const recipient = "John Dutton";
-  const requestLink = `https://daxfi.xyz/send?to=${encodeURIComponent(recipient)}&amount=${amount}&msg=${encodeURIComponent(message)}`;
+  const requestLink = `${baseUrl}/confirm-transaction?to=${encodeURIComponent(recipient)}&amount=${amount}&msg=${encodeURIComponent(message)}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
