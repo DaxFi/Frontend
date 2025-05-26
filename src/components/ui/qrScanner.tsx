@@ -23,5 +23,5 @@ export default function QrScanner({ onScan }: { onScan: (result: string) => void
     };
   }, [onScan]);
 
-  return <div id="qr-reader" style={{ width: "100%", height: "300px" }} />;
+  return <div id="qr-reader" className="w-full h-full flex" />;
 }

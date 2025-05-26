@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QrScanner from "@/components/ui/qrScanner";
 
 export default function PayPage() {
@@ -17,7 +17,25 @@ export default function PayPage() {
     router.push(qrCode);
   };
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  useEffect(() => {
+    if (!qrCode) return;
+
+    try {
+      const url = new URL(qrCode);
+      const to = url.searchParams.get("to");
+      const amount = url.searchParams.get("amount");
+
+      if (to && amount) {
+        router.push(`/confirm-transaction?to=${encodeURIComponent(to)}&amount=${amount}`);
+      } else {
+        console.warn("QR code missing required parameters");
+      }
+    } catch (err) {
+      console.error("Invalid QR code scanned", err);
+    }
+  }, [qrCode]);
+
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768; // TODO: Use a more robust mobile detection method
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
