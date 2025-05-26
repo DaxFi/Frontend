@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDisconnected) {
       router.push("/login");
     }
-    if (isConnected && pathname === "/" || pathname === "/login") {
+    if ((isConnected && pathname === "/") || pathname === "/login") {
       router.push("/dashboard");
     } else if (isAuthenticating && pathname === "/") {
       router.push("/");
