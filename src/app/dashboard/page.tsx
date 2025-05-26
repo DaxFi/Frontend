@@ -126,7 +126,7 @@ function DashboardAction({
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-xl shadow flex flex-col items-center justify-center py-6 hover:bg-gray-50 transition"
+      className="bg-white rounded-xl shadow flex flex-col items-center justify-center py-6 hover:bg-gray-50 transition cursor-pointer"
     >
       <div className="text-2xl mb-2">{icon}</div>
       <span className="text-sm font-medium">{label}</span>
