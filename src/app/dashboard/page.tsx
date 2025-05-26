@@ -71,7 +71,7 @@ export default function HomePage() {
           <DashboardAction
             icon={<FaDollarSign size={20} />}
             label={t("addFunds")}
-            onClick={() => router.push("/add")}
+            onClick={() => {}}
           />
           <DashboardAction
             icon={<FaPaperPlane size={20} />}
@@ -83,11 +83,7 @@ export default function HomePage() {
             label={t("request")}
             onClick={() => router.push("/request")}
           />
-          <DashboardAction
-            icon={<FaQrcode size={20} />}
-            label="Pay"
-            onClick={() => router.push("/pay")}
-          />
+          <DashboardAction icon={<FaQrcode size={20} />} label="Pay" onClick={() => {}} />
         </div>
 
         {/* Recent Activity */}
