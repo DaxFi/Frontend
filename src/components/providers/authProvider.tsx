@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (isAuthenticating && pathname === "/") {
       router.push("/");
     }
-  }, [isAuthenticating, isConnected, isDisconnected, router, pathname]);
+  }, [isAuthenticating, isConnected, isDisconnected]);
 
   const handleGooglePopupLogin = () => {
     authenticate({
