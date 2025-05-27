@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { FaCheckCircle, FaExclamationTriangle, FaClock } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 

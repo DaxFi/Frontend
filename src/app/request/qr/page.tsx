@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import QRCode from "react-qr-code";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@account-kit/react";
 import { useTranslations } from "next-intl";
 
