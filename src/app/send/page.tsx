@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FaUser, FaDollarSign } from "react-icons/fa";
+import { FaUser, FaDollarSign, FaArrowLeft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
@@ -38,9 +38,9 @@ export default function SendPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 hover:underline"
+          className="text-sm text-gray-500 mb-6 flex items-center gap-1 cursor-pointer"
         >
-          ← {t("back")}
+          <FaArrowLeft size={14} /> {t("back")}
         </button>
 
         {/* Header */}

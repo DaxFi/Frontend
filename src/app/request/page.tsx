@@ -3,9 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { FaArrowLeft } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 export default function RequestPage() {
   const router = useRouter();
+  const t = useTranslations("request");
+
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
@@ -26,19 +30,20 @@ export default function RequestPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 hover:underline flex items-center"
+          className="text-sm text-gray-500 mb-6 flex items-center cursor-pointer"
         >
-          ← Back
+          <FaArrowLeft size={14} className="mr-1" />
+          {t("back")}
         </button>
 
         {/* Header */}
-        <h1 className="text-2xl font-semibold text-center mb-8">Request Funds</h1>
+        <h1 className="text-2xl font-semibold text-center mb-8">{t("title")}</h1>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Amount Input */}
           <div>
             <label htmlFor="amount" className="block text-sm font-medium mb-1">
-              Amount
+              {t("amount")}
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -49,7 +54,7 @@ export default function RequestPage() {
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                placeholder={t("amountPlaceholder")}
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
               />
             </div>
@@ -58,13 +63,13 @@ export default function RequestPage() {
           {/* Optional Message */}
           <div>
             <label htmlFor="message" className="block text-sm font-medium mb-1">
-              Message (optional)
+              {t("message")}
             </label>
             <textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Message"
+              placeholder={t("messagePlaceholder")}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
             />
@@ -72,7 +77,7 @@ export default function RequestPage() {
 
           {/* Submit */}
           <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white">
-            Create Request
+            {t("createRequest")}
           </Button>
         </form>
       </div>

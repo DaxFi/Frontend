@@ -4,19 +4,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import QRCode from "react-qr-code";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUser } from "@account-kit/react";
+import { useTranslations } from "next-intl";
 
 export default function ConfirmRequestPage() {
   const router = useRouter();
   const params = useSearchParams();
+  const t = useTranslations("qr");
+  const user = useUser();
 
   const baseUrl =
     typeof window !== "undefined" ? window.location.origin : "https://daxfi.vercel.app";
 
   const amount = params.get("amount") || "0";
   const message = params.get("message") || "";
-  const recipient = "John Dutton";
-  const requestLink = `${baseUrl}/confirm-transaction?to=${encodeURIComponent(recipient)}&amount=${amount}`;
+  const recipient = user?.email;
+  const requestLink = `${baseUrl}/confirm-transaction?to=${recipient}&amount=${amount}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -31,18 +35,15 @@ export default function ConfirmRequestPage() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 hover:underline flex items-center gap-1"
+          className="text-sm text-gray-500 flex items-center gap-1 cursor-pointer"
         >
           <FaArrowLeft size={14} />
-          Back
+          {t("back")}
         </button>
 
         {/* Title */}
-        <h1 className="text-2xl font-semibold">Request Funds</h1>
-        <p className="text-sm text-gray-500">
-          Show the QR code on your screen, copy and paste the code, or send the link to who is
-          paying you.
-        </p>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
+        <p className="text-sm text-gray-500">{t("instructions")}</p>
 
         {/* QR Code */}
         <div className="flex justify-center py-4">
@@ -52,14 +53,14 @@ export default function ConfirmRequestPage() {
         {/* Summary */}
         <div className="text-sm space-y-1">
           <p>
-            <strong>Amount:</strong> ${amount}
+            <strong>{t("amount")}:</strong> ${amount}
           </p>
           <p>
-            <strong>To:</strong> {recipient}
+            <strong>{t("to")}:</strong> {recipient}
           </p>
           {message && (
             <p>
-              <strong>Message:</strong> {message}
+              <strong>{t("message")}:</strong> {message}
             </p>
           )}
         </div>
@@ -68,13 +69,10 @@ export default function ConfirmRequestPage() {
         <div className="space-y-3">
           <Button
             onClick={handleCopy}
-            className={`w-full ${
-              copied ? "bg-green-600" : "bg-teal-600"
-            } hover:bg-teal-700 text-white`}
+            className={`w-full ${copied ? "bg-green-600" : "bg-teal-600"} hover:bg-teal-700 text-white`}
           >
-            {/* classname margin left 8px: margi */}
-            {copied ? <FaCheck className="mr-2" /> : null}
-            {copied ? "  Copied!" : "Copy code"}
+            {copied && <FaCheck className="mr-2" />}
+            {copied ? t("copied") : t("copy")}
           </Button>
 
           <Button
@@ -89,7 +87,7 @@ export default function ConfirmRequestPage() {
               router.push(`/request/email?${query}`);
             }}
           >
-            Send Request
+            {t("send")}
           </Button>
         </div>
       </div>

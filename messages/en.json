@@ -20,7 +20,7 @@
     "addNote": "Add a note",
     "amount": "Amount",
     "to": "To",
-    "toPlaceholder": "@handle, email or phone",
+    "toPlaceholder": "Just put wallet address here for now",
     "optionalMessage": "Message (optional)",
     "reviewAndSend": "Review & Send",
     "back": "Back",
@@ -52,5 +52,25 @@
     "placeholder": "Code",
     "pay": "Pay",
     "scanPrompt": "Scan QR code"
+  },
+  "request": {
+    "back": "Back",
+    "title": "Request Funds",
+    "amount": "Amount",
+    "amountPlaceholder": "0.00",
+    "message": "Message (optional)",
+    "messagePlaceholder": "Message",
+    "createRequest": "Create Request"
+  },
+  "qr": {
+    "back": "Back",
+    "title": "Request Funds",
+    "instructions": "Show the QR code, copy the link, or send it to the person paying you.",
+    "amount": "Amount",
+    "to": "To",
+    "message": "Message",
+    "copy": "Copy code",
+    "copied": "Copied!",
+    "send": "Send Request"
   }
 }

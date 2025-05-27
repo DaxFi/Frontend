@@ -3,17 +3,44 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { sendPayment } from "@/lib/payments";
+import { convertUSDToEther } from "@/lib/utils";
+import { useSigner } from "@account-kit/react";
 
 export default function ConfirmSendPage() {
   const router = useRouter();
 
   const t = useTranslations("confirmTransaction");
 
-  const params = useSearchParams();
-  const { to, amount } = Object.fromEntries(params.entries());
+  const [isSending, setIsSending] = useState(false);
 
-  const handleConfirm = () => {
-    router.push(`/status?state=success&to=${to}&amount=${amount}`);
+  const params = useSearchParams();
+  const { recipient, amount, message } = Object.fromEntries(params.entries());
+
+  const signer = useSigner();
+
+  const handleConfirm = async () => {
+    setIsSending(true);
+    try {
+      if (!signer) {
+        console.error("Signer not available");
+        setIsSending(false);
+        router.push(`/status?state=error`);
+        return;
+      }
+      await sendPayment({
+        signer,
+        to: "0xA48B84bAbee471d8B1305D2aDB72BEE65dB1473c",
+        message,
+        amountEth: convertUSDToEther(Number(amount)).toString(),
+      });
+      router.push(`/status?state=success&to=${recipient}&amount=${amount}`);
+    } catch (error) {
+      setIsSending(false);
+      console.error("Transaction failed:", error);
+      router.push(`/status?state=error`);
+    }
   };
 
   const handleCancel = () => {
@@ -29,17 +56,37 @@ export default function ConfirmSendPage() {
         <h1 className="text-2xl font-semibold mb-8">{t("confirmPayment")}</h1>
 
         <div className="text-left space-y-4 mb-8">
-          <InfoRow label={t("to")} value={to} />
+          <InfoRow label={t("to")} value={recipient} />
           <InfoRow label={t("amount")} value={`$${amount}`} />
-          <InfoRow label={t("fees")} value="$0.45" />
+          <InfoRow label={t("fees")} value="$0.00" />
         </div>
 
         <div className="space-y-3">
           <Button
             onClick={handleConfirm}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={isSending}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center"
           >
-            {t("confirm")}
+            {isSending ? (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              t("confirm")
+            )}
           </Button>
           <Button variant="outline" onClick={handleCancel} className="w-full">
             {t("cancel")}

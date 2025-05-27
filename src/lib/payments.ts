@@ -1,17 +1,10 @@
-import { Contract, parseEther } from "ethers";
-import { Provider, Wallet } from "zksync-ethers";
+import { sendTransaction } from "@wonderchain/sdk";
+import { Contract, type TransactionLike, parseEther } from "ethers";
+import provider from "@/lib/provider";
 import paymentsAbi from "@/abi/payments.json";
-import provider from "./provider";
+import { type AlchemySigner } from "@account-kit/core";
 
 const CONTRACT_ADDRESS = "0xaf53c48a4eba2C5C4c8f41f26cB1bA127308847F";
-
-async function getPaymentsContract(signerOrProvider?: Wallet | Provider) {
-  const connected = signerOrProvider || provider;
-
-  const contract = new Contract(CONTRACT_ADDRESS, paymentsAbi.abi, connected);
-
-  return contract;
-}
 
 export async function sendPayment({
   signer,
@@ -19,20 +12,47 @@ export async function sendPayment({
   message,
   amountEth,
 }: {
-  signer: Wallet;
+  signer: AlchemySigner;
   to: string;
   message: string;
   amountEth: string;
 }) {
-  const contract = await getPaymentsContract(signer);
-
-  const tx = await contract.sendPayment(to, message, {
-    value: parseEther(amountEth),
+  console.log("debug: sendPayment called with", {
+    to,
+    message,
+    amountEth,
   });
 
-  console.log("[Tx] Sent:", tx.hash);
+  console.log("debug: signer", signer);
 
-  const receipt = await tx.wait();
+  if (!signer) {
+    throw new Error("Signer is not available. Please ensure you are connected.");
+  }
 
-  return receipt;
+  console.log("debug: signer", signer);
+
+  const contract = new Contract(CONTRACT_ADDRESS, paymentsAbi.abi);
+
+  console.log("debug: contract", contract);
+
+  console.log("user address", await signer.getAddress());
+
+  const address = await signer.getAddress();
+
+  console.log("debug: parseEther", parseEther(amountEth));
+
+  const data: TransactionLike = {
+    from: address,
+    to,
+    value: parseEther(amountEth),
+    data: "0x",
+  };
+
+  console.log("debug: data", data);
+
+  const tx = await sendTransaction(provider, data, signer.signTypedData);
+
+  console.log("debug: tx", tx);
+
+  return tx;
 }

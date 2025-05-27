@@ -25,12 +25,6 @@ function TransactionStatusContent() {
       }),
       button: t("okButton"),
     },
-    pending: {
-      icon: <FaClock className="text-yellow-500 text-5xl mb-4" />,
-      title: t("pendingTitle"),
-      message: t("pendingMessage"),
-      button: t("refreshButton"),
-    },
     error: {
       icon: <FaExclamationTriangle className="text-red-500 text-5xl mb-4" />,
       title: t("failedTitle"),
@@ -45,7 +39,7 @@ function TransactionStatusContent() {
     if (state === "success") {
       router.push("/dashboard");
     } else {
-      router.refresh();
+      router.back();
     }
   };
 
