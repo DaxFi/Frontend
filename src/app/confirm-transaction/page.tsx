@@ -31,7 +31,7 @@ export default function ConfirmSendPage() {
       }
       await sendPayment({
         signer,
-        to: "0xA48B84bAbee471d8B1305D2aDB72BEE65dB1473c",
+        to: recipient,
         message,
         amountEth: convertUSDToEther(Number(amount)).toString(),
       });

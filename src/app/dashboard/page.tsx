@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { FaDollarSign, FaPaperPlane, FaDownload, FaQrcode } from "react-icons/fa";
-import { useAccount } from "@account-kit/react";
+import { useSigner } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
@@ -18,22 +18,23 @@ export default function HomePage() {
   const t = useTranslations("dashboard");
   const { signOut } = useAuth();
 
-  const { account, address } = useAccount({
-    type: "LightAccount",
-  });
+  const signer = useSigner();
 
   const [balance, setBalance] = useState<bigint | null>(null);
 
   useEffect(() => {
-    console.log("debug: account", account);
+    console.log("debug: signer", signer);
     const client = createPublicClient({
       chain: baseWonderTestnet,
       transport: http(RPC_URL),
     });
 
-    if (address) client.getBalance({ address: address }).then(setBalance);
-    console.log("debug: balance", formatEthAmount(balance || BigInt(0)));
-  }, [account, balance, address]);
+    (async () => {
+      const address = await signer?.getAddress();
+      console.log("debug: address", address);
+      if (signer) client.getBalance({ address: await signer.getAddress() }).then(setBalance);
+    })();
+  }, [signer]);
 
   return (
     <main
