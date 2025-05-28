@@ -20,7 +20,7 @@
     "addNote": "Add a note",
     "amount": "Amount",
     "to": "To",
-    "toPlaceholder": "Just put wallet address here for now",
+    "toPlaceholder": "@handle, email, or wallet address",
     "optionalMessage": "Message (optional)",
     "reviewAndSend": "Review & Send",
     "back": "Back",

@@ -4,19 +4,21 @@ import { useRouter } from "next/navigation";
 import { FaUser, FaDollarSign, FaArrowLeft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { fetchHandleSuggestions } from "@/lib/utils";
 
 export default function SendPage() {
   const router = useRouter();
 
   const t = useTranslations("send");
 
-  const recipientRef = useRef<HTMLInputElement>(null);
   const amountRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [recipient, setRecipient] = useState("");
+
   const handleSubmit = () => {
-    const recipient = recipientRef.current?.value;
     const amount = amountRef.current?.value;
     const message = messageRef.current?.value;
 
@@ -59,10 +61,37 @@ export default function SendPage() {
               <input
                 id="to"
                 type="text"
-                ref={recipientRef}
+                value={recipient}
+                onChange={async (e) => {
+                  const val = e.target.value;
+                  setRecipient(val);
+
+                  if (val.startsWith("@")) {
+                    const results = await fetchHandleSuggestions(val);
+                    setSuggestions(results);
+                  } else {
+                    setSuggestions([]);
+                  }
+                }}
                 placeholder={t("toPlaceholder")}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
               />
+              {suggestions.length > 0 && (
+                <ul className="mt-1 border border-gray-300 rounded-md bg-white shadow-md absolute z-10 w-full max-h-48 overflow-auto">
+                  {suggestions.map((handle) => (
+                    <li
+                      key={handle}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setRecipient(handle);
+                        setSuggestions([]);
+                      }}
+                    >
+                      {handle}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 

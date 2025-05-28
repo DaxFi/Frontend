@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { sendPayment } from "@/lib/payments";
-import { convertUSDToEther } from "@/lib/utils";
+import { convertUSDToEther, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner } from "@account-kit/react";
 
 export default function ConfirmSendPage() {
@@ -23,6 +23,7 @@ export default function ConfirmSendPage() {
   const handleConfirm = async () => {
     setIsSending(true);
     try {
+      let recipientAddress = await resolveRecipientWalletAddress(recipient);
       if (!signer) {
         console.error("Signer not available");
         setIsSending(false);
@@ -31,7 +32,7 @@ export default function ConfirmSendPage() {
       }
       await sendPayment({
         signer,
-        to: recipient,
+        to: recipientAddress,
         message,
         amountEth: convertUSDToEther(Number(amount)).toString(),
       });

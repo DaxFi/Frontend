@@ -46,6 +46,7 @@ export default function LoginPage() {
             onClick={handleLogin}
             variant="outline"
             className="flex items-center justify-center gap-2"
+            disabled
           >
             <FaEnvelope />
             {t("loginWithEmail")}

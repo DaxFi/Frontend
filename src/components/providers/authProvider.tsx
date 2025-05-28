@@ -4,6 +4,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect } from "react";
 import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
 import type { User } from "@account-kit/signer";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { generateHandle } from "@/lib/utils";
 
 type AuthMethod = "google" | "email";
 
@@ -27,6 +30,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const user = useUser();
 
   useEffect(() => {
+    const syncUserToFirestore = async () => {
+      if (!user) return;
+
+      try {
+        const { address } = user;
+        const userRef = doc(db, "users", user.userId);
+        const docSnap = await getDoc(userRef);
+
+        if (!docSnap.exists()) {
+          await setDoc(userRef, {
+            email: user.email?.toLowerCase() || null,
+            walletAddress: address,
+            createdAt: new Date().toISOString(),
+            handle: generateHandle(user.email),
+          });
+        }
+      } catch (err) {
+        console.error("Failed to sync user to Firestore", err);
+      }
+    };
+
+    if (isConnected && user) {
+      syncUserToFirestore();
+    }
     if (isDisconnected) {
       router.push("/login");
     }
