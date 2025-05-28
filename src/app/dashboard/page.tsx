@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { FaDollarSign, FaPaperPlane, FaDownload, FaQrcode } from "react-icons/fa";
-import { useSigner } from "@account-kit/react";
+import { useSigner, useUser } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
@@ -19,6 +19,7 @@ export default function HomePage() {
   const { signOut } = useAuth();
 
   const signer = useSigner();
+  const user = useUser();
 
   const [balance, setBalance] = useState<bigint | null>(null);
 
@@ -34,7 +35,7 @@ export default function HomePage() {
       console.log("debug: address", address);
       if (signer) client.getBalance({ address: await signer.getAddress() }).then(setBalance);
     })();
-  }, [signer]);
+  }, [signer, user]);
 
   return (
     <main
