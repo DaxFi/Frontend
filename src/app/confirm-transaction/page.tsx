@@ -23,7 +23,7 @@ export default function ConfirmSendPage() {
   const handleConfirm = async () => {
     setIsSending(true);
     try {
-      let recipientAddress = await resolveRecipientWalletAddress(recipient);
+      const recipientAddress = await resolveRecipientWalletAddress(recipient);
       if (!signer) {
         console.error("Signer not available");
         setIsSending(false);
