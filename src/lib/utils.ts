@@ -122,7 +122,7 @@ export async function walletAddressToHandle(walletAddress: `0x${string}`): Promi
 }
 
 export type ParsedTransaction = {
-  hash: `0x${string}`;
+  hash: string;
   type: string;
   to: string;
   from: string;
@@ -132,7 +132,40 @@ export type ParsedTransaction = {
   date: string;
 };
 
-async function parseTransaction(tx: any, userAddress: string): Promise<ParsedTransaction> {
+type RawTransaction = {
+  blockNumber: string;
+  timeStamp: string;
+  hash: string;
+  nonce: string;
+  blockHash: string;
+  transactionIndex: string;
+  from: `0x${string}`;
+  to: `0x${string}`;
+  value: string;
+  gas: string;
+  gasPrice: string;
+  isError: string;
+  txreceipt_status: string;
+  input: string;
+  contractAddress: string | null;
+  cumulativeGasUsed: string;
+  gasUsed: string;
+  confirmations: string;
+  fee: string;
+  methodId: string;
+  functionName: string;
+  commitTxHash?: string | null;
+  proveTxHash?: string | null;
+  executeTxHash?: string | null;
+  isL1Originated?: string;
+  l1BatchNumber?: string;
+  type?: string;
+};
+
+async function parseTransaction(
+  tx: RawTransaction,
+  userAddress: string,
+): Promise<ParsedTransaction> {
   const isSender = tx.from.toLowerCase() === userAddress.toLowerCase();
   const isError = tx.isError !== "0" || tx.txreceipt_status !== "1";
   const timestamp = new Date(Number(tx.timeStamp) * 1000);
@@ -142,14 +175,17 @@ async function parseTransaction(tx: any, userAddress: string): Promise<ParsedTra
     type: isSender ? "Sent" : "Received",
     to: (await walletAddressToHandle(tx.to)) || tx.to,
     from: (await walletAddressToHandle(tx.from)) || tx.from,
-    value: convertWeiToUSD(tx.value),
+    value: convertWeiToUSD(BigInt(tx.value)),
     status: isError ? "Failed" : "Success",
     direction: isSender ? "out" : "in",
     date: timestamp.toLocaleDateString(),
   };
 }
 
-export async function parseTransactions(transactions: any[], userAddress: `0x${string}`) {
+export async function parseTransactions(
+  transactions: RawTransaction[],
+  userAddress: `0x${string}`,
+) {
   const parsed = await Promise.all(transactions.map((tx) => parseTransaction(tx, userAddress)));
   return parsed;
 }
