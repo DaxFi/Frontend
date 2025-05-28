@@ -14,7 +14,8 @@
     "recentActivity": "Recent activity",
     "noRecentActivity": "You haven't made any transactions yet.",
     "sendFirstTransfer": "Send your first transfer",
-    "logout": "Logout"
+    "logout": "Logout",
+    "withdraw": "Withdraw"
   },
   "send": {
     "addNote": "Add a note",
@@ -72,5 +73,10 @@
     "copy": "Copy code",
     "copied": "Copied!",
     "send": "Send Request"
+  },
+  "chip": {
+    "success": "Success",
+    "error": "Error",
+    "pending": "Pending"
   }
 }

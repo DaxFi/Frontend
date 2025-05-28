@@ -4,13 +4,23 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { FaDollarSign, FaPaperPlane, FaDownload, FaQrcode } from "react-icons/fa";
+import { FaDollarSign, FaPaperPlane, FaDownload, FaMoneyBill } from "react-icons/fa";
 import { useSigner, useUser } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
-import { formatEthAmount, formatEthToUSD } from "@/lib/utils";
+import {
+  ParsedTransaction,
+  formatEthAmount,
+  formatEthToUSD,
+  parseTransactions,
+  truncate,
+} from "@/lib/utils";
+import { Chip } from "@/components/ui/chip";
+
+const BLOCK_EXPLORER_URL =
+  "https://block-explorer.testnet.wonderchain.org/api?module=account&action=txlist&page=1&offset=10&sort=desc&endblock=99999999&startblock=0&address=";
 
 export default function HomePage() {
   const router = useRouter();
@@ -22,6 +32,20 @@ export default function HomePage() {
   const user = useUser();
 
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [transactions, setTransactions] = useState<ParsedTransaction[] | undefined>();
+
+  const fetchTransactions = async (address: `0x${string}`) => {
+    try {
+      const response = await fetch(`${BLOCK_EXPLORER_URL}${address}`);
+      if (!response.ok) throw new Error("Failed to fetch transactions");
+      const data = await response.json();
+      const parsedTransactions = await parseTransactions(data.result, address);
+      setTransactions(parsedTransactions);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     console.log("debug: signer", signer);
@@ -31,11 +55,16 @@ export default function HomePage() {
     });
 
     (async () => {
-      const address = await signer?.getAddress();
-      console.log("debug: address", address);
-      if (signer) client.getBalance({ address: await signer.getAddress() }).then(setBalance);
+      try {
+        const address = await signer?.getAddress();
+        console.log("debug: address", address);
+        if (signer) client.getBalance({ address: await signer.getAddress() }).then(setBalance);
+        if (address) await fetchTransactions(address);
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+      }
     })();
-  }, [signer, user]);
+  }, [user]);
 
   return (
     <main
@@ -85,21 +114,76 @@ export default function HomePage() {
             label={t("request")}
             onClick={() => router.push("/request")}
           />
-          <DashboardAction icon={<FaQrcode size={20} />} label="Pay" onClick={() => {}} />
+          <DashboardAction
+            icon={<FaMoneyBill size={20} />}
+            label={t("withdraw")}
+            onClick={() => {}}
+          />
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow p-6 text-center">
-          <div className="text-3xl text-gray-400 mb-4">📥</div>
-          <h3 className="text-lg font-semibold mb-1">{t("recentActivity")}</h3>
-          <p className="text-sm text-gray-500 mb-4">{t("noRecentActivity")}</p>
-          <Button
-            variant="outline"
-            onClick={() => router.push("/send")}
-            className="text-blue-600 border-blue-600 hover:bg-blue-50"
-          >
-            {t("sendFirstTransfer")}
-          </Button>
+        <div className="bg-white rounded-xl shadow p-6 max-h-[320px] overflow-hidden">
+          <h3 className="text-lg font-semibold mb-4">{t("recentActivity")}</h3>
+
+          {!transactions ? (
+            <div className="h-[300px] overflow-hidden space-y-4 animate-pulse">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex justify-between items-center px-2 py-3 bg-gray-100 rounded-md"
+                >
+                  <div className="flex flex-col space-y-2">
+                    <div className="h-4 w-32 bg-gray-300 rounded" />
+                    <div className="h-3 w-20 bg-gray-200 rounded" />
+                  </div>
+                  <div className="h-4 w-16 bg-gray-300 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : transactions.length === 0 ? (
+            <div className="text-center">
+              <div className="text-3xl text-gray-400 mb-4">📥</div>
+              <p className="text-sm text-gray-500 mb-4">{t("noRecentActivity")}</p>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/send")}
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+              >
+                {t("sendFirstTransfer")}
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-y-auto pr-2">
+              <ul className="divide-y divide-gray-200 max-h-[240px]">
+                {transactions &&
+                  transactions.map((item) => (
+                    <li key={item.hash} className="py-4">
+                      <div className="flex justify-between items-center">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900">
+                            {item.type}{" "}
+                            {item.direction === "out"
+                              ? `to ${truncate(item.to)}`
+                              : `from ${truncate(item.from)}`}
+                          </span>
+                          <span className="mt-1">
+                            <Chip status={item.status} />
+                          </span>
+                        </div>
+                        <div
+                          className={`text-sm font-semibold ${
+                            item.direction === "out" ? "text-red-600" : "text-green-700"
+                          }`}
+                        >
+                          {item.direction === "out" ? "-" : "+"}
+                          {item.value}
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
         </div>
         <div>
           {/* Temporary logout button for testing */}

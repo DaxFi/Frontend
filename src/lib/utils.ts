@@ -39,6 +39,17 @@ export function convertUSDToEther(
   return (amount / ethPriceUSD).toFixed(decimals);
 }
 
+export function convertWeiToUSD(
+  weiAmount: bigint,
+  ethPriceUSD: number = ETH_PRICE_USD,
+  decimals: number = 18,
+): string {
+  const factor = BigInt(10) ** BigInt(decimals);
+  const ethAmount = Number(weiAmount) / Number(factor);
+  const usdValue = ethAmount * ethPriceUSD;
+  return `US$${usdValue.toFixed(2)}`;
+}
+
 export function inferRecipientInputType(input: string): "email" | "handle" | "address" {
   const trimmed = input.trim();
 
@@ -101,4 +112,49 @@ export async function resolveRecipientWalletAddress(input: string): Promise<`0x$
   }
 
   return user.walletAddress;
+}
+
+export async function walletAddressToHandle(walletAddress: `0x${string}`): Promise<string | null> {
+  const q = query(collection(db, "users"), where("walletAddress", "==", walletAddress));
+  const snapshot = await getDocs(q);
+  const user = snapshot.docs[0]?.data();
+  return user ? user.handle : null;
+}
+
+export type ParsedTransaction = {
+  hash: `0x${string}`;
+  type: string;
+  to: string;
+  from: string;
+  value: string;
+  status: string;
+  direction: "in" | "out";
+  date: string;
+};
+
+async function parseTransaction(tx: any, userAddress: string): Promise<ParsedTransaction> {
+  const isSender = tx.from.toLowerCase() === userAddress.toLowerCase();
+  const isError = tx.isError !== "0" || tx.txreceipt_status !== "1";
+  const timestamp = new Date(Number(tx.timeStamp) * 1000);
+
+  return {
+    hash: tx.hash,
+    type: isSender ? "Sent" : "Received",
+    to: (await walletAddressToHandle(tx.to)) || tx.to,
+    from: (await walletAddressToHandle(tx.from)) || tx.from,
+    value: convertWeiToUSD(tx.value),
+    status: isError ? "Failed" : "Success",
+    direction: isSender ? "out" : "in",
+    date: timestamp.toLocaleDateString(),
+  };
+}
+
+export async function parseTransactions(transactions: any[], userAddress: `0x${string}`) {
+  const parsed = await Promise.all(transactions.map((tx) => parseTransaction(tx, userAddress)));
+  return parsed;
+}
+
+export function truncate(str: string, length: number = 15, separator: string = "..."): string {
+  if (str.length <= length) return str;
+  return str.slice(0, length - separator.length) + separator;
 }
