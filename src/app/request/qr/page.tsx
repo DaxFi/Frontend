@@ -20,7 +20,7 @@ export default function ConfirmRequestPage() {
   const amount = params.get("amount") || "0";
   const message = params.get("message") || "";
   const recipient = user?.email;
-  const requestLink = `${baseUrl}/confirm-transaction?to=${recipient}&amount=${amount}`;
+  const requestLink = `${baseUrl}/confirm-transaction?recipient=${recipient}&amount=${amount}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
