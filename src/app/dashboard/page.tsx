@@ -93,7 +93,7 @@ export default function HomePage() {
           ) : (
             <>
               <h2 className="text-4xl font-bold mb-2">{formatEthToUSD(balance)}</h2>
-              <p className="text-sm text-gray-500">{formatEthAmount(balance)}</p>
+              <p className="text-sm text-gray-500 hidden">{formatEthAmount(balance)}</p>
             </>
           )}
         </div>
