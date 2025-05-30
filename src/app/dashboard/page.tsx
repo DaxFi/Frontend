@@ -18,6 +18,7 @@ import {
   truncate,
 } from "@/lib/utils";
 import { Chip } from "@/components/ui/chip";
+import Image from "next/image";
 
 const BLOCK_EXPLORER_URL =
   "https://block-explorer.testnet.wonderchain.org/api?module=account&action=txlist&page=1&offset=10&sort=desc&endblock=99999999&startblock=0&address=";
@@ -78,7 +79,7 @@ export default function HomePage() {
             className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
                 from-blue-600 to-teal-400"
           >
-            DaxFi
+            <Image src="/daxfi-logo-web.png" alt="DaxFi Logo" width={100} height={100} />
           </h1>
         </div>
 
@@ -103,6 +104,7 @@ export default function HomePage() {
             icon={<FaDollarSign size={20} />}
             label={t("addFunds")}
             onClick={() => {}}
+            isDisabled={true} // Disable for now
           />
           <DashboardAction
             icon={<FaPaperPlane size={20} />}
@@ -118,6 +120,7 @@ export default function HomePage() {
             icon={<FaMoneyBill size={20} />}
             label={t("withdraw")}
             onClick={() => {}}
+            isDisabled={true} // Disable for now
           />
         </div>
 
@@ -153,7 +156,7 @@ export default function HomePage() {
               </Button>
             </div>
           ) : (
-            <div className="overflow-y-auto pr-2">
+            <div className="overflow-y-auto pr-2 scrollbar-hide">
               <ul className="divide-y divide-gray-200 max-h-[240px]">
                 {transactions &&
                   transactions.map((item) => (
@@ -203,16 +206,21 @@ export default function HomePage() {
 function DashboardAction({
   icon,
   label,
+  isDisabled = false,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
+  isDisabled?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
+      disabled={isDisabled}
       onClick={onClick}
-      className="bg-white rounded-xl shadow flex flex-col items-center justify-center py-6 hover:bg-gray-50 transition cursor-pointer"
+      className={`bg-white rounded-xl shadow flex flex-col items-center justify-center py-6 transition
+        ${isDisabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50 cursor-pointer"}
+      `}
     >
       <div className="text-2xl mb-2">{icon}</div>
       <span className="text-sm font-medium">{label}</span>

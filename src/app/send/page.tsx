@@ -12,14 +12,13 @@ export default function SendPage() {
 
   const t = useTranslations("send");
 
-  const amountRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recipient, setRecipient] = useState("");
+  const [amount, setAmount] = useState("");
 
   const handleSubmit = () => {
-    const amount = amountRef.current?.value;
     const message = messageRef.current?.value;
 
     if (!recipient || !amount) {
@@ -106,9 +105,21 @@ export default function SendPage() {
               <input
                 id="amount"
                 type="number"
-                ref={amountRef}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                onBlur={(e) => {
+                  const raw = e.target.value.trim();
+                  if (raw === "") return;
+                  const num = parseFloat(raw);
+                  if (!isNaN(num)) {
+                    e.target.value = num.toFixed(2);
+                  } else {
+                    e.target.value = "0.00";
+                  }
+                  setAmount(e.target.value);
+                }}
               />
             </div>
           </div>
@@ -128,6 +139,7 @@ export default function SendPage() {
 
           <Button
             type="button"
+            disabled={!(Number(amount) >= 0.01 && recipient)}
             className="w-full bg-teal-600 hover:bg-teal-700 text-white"
             onClick={handleSubmit}
           >

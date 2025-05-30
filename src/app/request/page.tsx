@@ -17,7 +17,7 @@ export default function RequestPage() {
     e.preventDefault();
 
     const query = new URLSearchParams({
-      amount,
+      amount: parseFloat(amount).toFixed(2),
       message,
     }).toString();
 
@@ -55,6 +55,17 @@ export default function RequestPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder={t("amountPlaceholder")}
+                onBlur={(e) => {
+                  const raw = e.target.value.trim();
+                  if (raw === "") return;
+                  const num = parseFloat(raw);
+                  if (!isNaN(num)) {
+                    e.target.value = num.toFixed(2);
+                  } else {
+                    e.target.value = "0.00";
+                  }
+                  setAmount(e.target.value);
+                }}
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
               />
             </div>
@@ -76,7 +87,11 @@ export default function RequestPage() {
           </div>
 
           {/* Submit */}
-          <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white">
+          <Button
+            disabled={!(parseFloat(amount) >= 0.01)}
+            type="submit"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+          >
             {t("createRequest")}
           </Button>
         </form>

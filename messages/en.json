@@ -21,11 +21,11 @@
     "addNote": "Add a note",
     "amount": "Amount",
     "to": "To",
-    "toPlaceholder": "@handle, email, or wallet address",
+    "toPlaceholder": "@username or email address",
     "optionalMessage": "Message (optional)",
     "reviewAndSend": "Review & Send",
     "back": "Back",
-    "sendFunds": "Send funds",
+    "sendFunds": "Send",
     "noAmountOrRecipientError": "Please enter an amount and recipient"
   },
   "confirmTransaction": {
@@ -56,7 +56,7 @@
   },
   "request": {
     "back": "Back",
-    "title": "Request Funds",
+    "title": "Request",
     "amount": "Amount",
     "amountPlaceholder": "0.00",
     "message": "Message (optional)",
@@ -65,7 +65,7 @@
   },
   "qr": {
     "back": "Back",
-    "title": "Request Funds",
+    "title": "Request",
     "instructions": "Show the QR code, copy the link, or send it to the person paying you.",
     "amount": "Amount",
     "to": "To",

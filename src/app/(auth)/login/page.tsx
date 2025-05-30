@@ -3,6 +3,7 @@
 import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FaGoogle, FaEnvelope } from "react-icons/fa";
 
@@ -24,9 +25,15 @@ export default function LoginPage() {
       <div className="max-w-md bg-white rounded-xl shadow-md p-8 text-center">
         <h1
           className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
-            from-blue-600 to-teal-400 mb-4"
+            mb-6"
         >
-          DaxFi
+          <Image
+            src="/daxfi-logo-web.png"
+            alt="DaxFi Logo"
+            width={150}
+            height={150}
+            className="mx-auto"
+          />
         </h1>
         <p className="text-lg font-semibold mb-1">{t("title")}</p>
         <p className="text-sm text-gray-500 mb-8">{t("subtitle")}</p>
