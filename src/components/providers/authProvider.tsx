@@ -1,20 +1,21 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { generateHandle } from "@/lib/utils";
+import { generateHandle, walletAddressToHandle } from "@/lib/utils";
 
 type AuthMethod = "google" | "email";
 
 const AuthContext = createContext<{
   user: User | null;
+  handle: string | null;
   signIn?: (method: AuthMethod) => Promise<void>;
   signOut?: () => Promise<void>;
-}>({ user: null });
+}>({ user: null, handle: null });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -28,6 +29,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const { authenticate } = useAuthenticate();
   const user = useUser();
+
+  const [handle, setHandle] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchHandle = async () => {
+      try {
+        const userWalletAddress = user.address as `0x${string}`;
+        const userHandle = await walletAddressToHandle(userWalletAddress);
+        setHandle(userHandle);
+      } catch (error) {
+        console.error("Error fetching user handle:", error);
+      }
+    };
+
+    fetchHandle();
+  }, [user]);
 
   useEffect(() => {
     const syncUserToFirestore = async () => {
@@ -80,7 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await logout();
   };
 
-  return <AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, handle, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);
