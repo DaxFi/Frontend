@@ -23,10 +23,8 @@ export default function ConfirmSendPage() {
   const { recipient, amount, message } = Object.fromEntries(params.entries());
 
   const signer = useSigner();
-  
-  const isOnDaxFi = async (
-    recipientEmail: string
-  ): Promise<boolean> => {
+
+  const isOnDaxFi = async (recipientEmail: string): Promise<boolean> => {
     const q = query(collection(db, "users"), where("email", "==", recipientEmail));
     const snapshot = await getDocs(q);
     const userData = snapshot.docs[0]?.data();
@@ -43,7 +41,7 @@ export default function ConfirmSendPage() {
         router.push(`/status?state=error`);
         return;
       }
-      if(await isOnDaxFi(recipient)) {
+      if (await isOnDaxFi(recipient)) {
         const recipientAddress = await resolveRecipientWalletAddress(recipient);
         await sendPayment({
           signer,
@@ -55,7 +53,7 @@ export default function ConfirmSendPage() {
         await sendPendingClaim({
           signer,
           recipientEmail: recipient,
-          amountEth: convertUSDToEther(Number(amount)).toString()
+          amountEth: convertUSDToEther(Number(amount)).toString(),
         });
       }
       router.push(`/status?state=success&to=${recipient}&amount=${amount}`);

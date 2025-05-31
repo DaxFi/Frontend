@@ -2,7 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect } from "react";
-import { useSignerStatus, useLogout, useAuthenticate, useUser, useSigner } from "@account-kit/react";
+import {
+  useSignerStatus,
+  useLogout,
+  useAuthenticate,
+  useUser,
+  useSigner,
+} from "@account-kit/react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -43,13 +49,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userRef = doc(db, "users", user.userId);
         const docSnap = await getDoc(userRef);
 
-        const isUserOnDaxFi = docSnap.exists()
+        const isUserOnDaxFi = docSnap.exists();
         if (!isUserOnDaxFi) {
           const signerAddress = await signer?.getAddress();
 
           const amount = BigInt(await getPendingAmountForEmail(user?.email));
-          if(amount > 0) {
-            const tx = await claimFundsForEmail({ signer, email: user.email!, recipientAddress: signerAddress });
+          if (amount > 0) {
+            const tx = await claimFundsForEmail({
+              signer,
+              email: user.email!,
+              recipientAddress: signerAddress,
+            });
             await provider.waitForTransaction(tx.hash!);
           }
 
@@ -60,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             handle: generateHandle(user.email),
           });
         }
-        
+
         router.push("/dashboard");
       } catch (err) {
         console.error("Failed to sync user to Firestore", err);

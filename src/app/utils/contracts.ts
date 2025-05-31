@@ -1,7 +1,7 @@
 import { sendTransaction } from "@wonderchain/sdk";
 import { keccak256, parseEther, toUtf8Bytes, Interface, type TransactionLike } from "ethers";
 import type { AlchemySigner } from "@account-kit/core";
-import PendingClaimEthArtifact from "@/abi/PendingClaimETH.json"; 
+import PendingClaimEthArtifact from "@/abi/PendingClaimETH.json";
 import provider from "@/lib/provider";
 import { Contract } from "zksync-ethers";
 
@@ -41,7 +41,7 @@ export async function sendPendingClaim({
 }
 
 export async function getPendingAmountForEmail(email?: string): Promise<string> {
-    if(!email) return "0";
+  if (!email) return "0";
 
   const contract = new Contract(CONTRACT_ADDRESS, PendingClaimEthArtifact.abi, provider);
 
@@ -70,10 +70,7 @@ export async function claimFundsForEmail({
 
   const iface = new Interface(PendingClaimEthArtifact.abi);
   const recipientHash = keccak256(toUtf8Bytes(email));
-  const encodedData = iface.encodeFunctionData("claimFunds", [
-    recipientHash,
-    recipientAddress,
-  ]);
+  const encodedData = iface.encodeFunctionData("claimFunds", [recipientHash, recipientAddress]);
 
   const data: TransactionLike = {
     from,
