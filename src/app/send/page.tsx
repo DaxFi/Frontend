@@ -5,29 +5,47 @@ import { FaUser, FaDollarSign, FaArrowLeft } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-import { fetchHandleSuggestions } from "@/lib/utils";
+import { fetchHandleSuggestions, inferRecipientInputType } from "@/lib/utils";
 
 export default function SendPage() {
   const router = useRouter();
-
   const t = useTranslations("send");
 
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
+  const [isInvalidRecipient, setIsInvalidRecipient] = useState(false);
 
-  const handleSubmit = () => {
+  const normalizeHandle = (val: string) => (val.startsWith("@") ? val.slice(1) : val);
+
+  const handleSubmit = async () => {
     const message = messageRef.current?.value;
+    const isAmountValid = Number(amount) >= 0.01;
+    const trimmed = recipient.trim();
+    const normalizedHandle = normalizeHandle(trimmed);
 
-    if (!recipient || !amount) {
-      alert(t("noAmountOrRecipientError"));
-      return;
+    let isValidRecipient = false;
+
+    try {
+      const inputType = inferRecipientInputType(normalizedHandle);
+
+      if (inputType === "handle") {
+        const results = await fetchHandleSuggestions(`@${normalizedHandle}`);
+        isValidRecipient = results.includes(normalizedHandle);
+      } else {
+        isValidRecipient = true; // Assume valid if it's an email or address
+      }
+    } catch {
+      isValidRecipient = false;
     }
 
+    setIsInvalidRecipient(!isValidRecipient);
+
+    if (!isAmountValid || !isValidRecipient) return;
+
     const params = new URLSearchParams();
-    params.set("recipient", recipient);
+    params.set("recipient", normalizedHandle);
     params.set("amount", amount);
     params.set("message", message || "");
     router.push(`/confirm-transaction?${params.toString()}`);
@@ -61,39 +79,28 @@ export default function SendPage() {
                 id="to"
                 type="text"
                 value={recipient}
-                onChange={async (e) => {
-                  const val = e.target.value;
-                  setRecipient(val);
-
-                  if (val.startsWith("@")) {
-                    const results = await fetchHandleSuggestions(val);
-                    setSuggestions(results);
-                  } else {
-                    setSuggestions([]);
-                  }
+                onChange={(e) => {
+                  setRecipient(e.target.value);
+                  setIsInvalidRecipient(false); // reset error while typing
                 }}
                 placeholder={t("toPlaceholder")}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+                  isInvalidRecipient ? "border-red-500" : "border-gray-300"
+                }`}
               />
-              {suggestions.length > 0 && (
-                <ul className="mt-1 border border-gray-300 rounded-md bg-white shadow-md absolute z-10 w-full max-h-48 overflow-auto">
-                  {suggestions.map((handle) => (
-                    <li
-                      key={handle}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setRecipient(handle);
-                        setSuggestions([]);
-                      }}
-                    >
-                      {handle}
-                    </li>
-                  ))}
-                </ul>
-              )}
+            </div>
+            <div
+              className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                isInvalidRecipient
+                  ? "max-h-10 opacity-100 translate-y-0"
+                  : "max-h-0 opacity-0 -translate-y-1"
+              }`}
+            >
+              <p className="text-sm text-red-700 mt-1">{t("handleNotFoundMessage")}</p>
             </div>
           </div>
 
+          {/* Amount */}
           <div>
             <label className="block text-sm font-medium mb-1" htmlFor="amount">
               {t("amount")}
@@ -124,6 +131,7 @@ export default function SendPage() {
             </div>
           </div>
 
+          {/* Optional Message */}
           <div>
             <label className="block text-sm font-medium mb-1" htmlFor="message">
               {t("optionalMessage")}
@@ -139,7 +147,7 @@ export default function SendPage() {
 
           <Button
             type="button"
-            disabled={!(Number(amount) >= 0.01 && recipient)}
+            disabled={!recipient || Number(amount) < 0.01}
             className="w-full bg-teal-600 hover:bg-teal-700 text-white"
             onClick={handleSubmit}
           >

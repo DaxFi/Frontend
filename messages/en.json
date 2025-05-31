@@ -26,7 +26,8 @@
     "reviewAndSend": "Review & Send",
     "back": "Back",
     "sendFunds": "Send",
-    "noAmountOrRecipientError": "Please enter an amount and recipient"
+    "noAmountOrRecipientError": "Please enter an amount and recipient",
+    "handleNotFoundMessage": "There's no such user on DaxFi yet, consider using their email 🙂"
   },
   "confirmTransaction": {
     "confirmPayment": "Confirm payment",
