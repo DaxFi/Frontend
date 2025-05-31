@@ -65,7 +65,7 @@ export default function ConfirmSendPage() {
   };
 
   const handleCancel = () => {
-    router.back();
+    router.push("/dashboard");
   };
 
   return (

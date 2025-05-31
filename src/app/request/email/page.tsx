@@ -68,7 +68,7 @@ export default function RequestEmailPage() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 hover:underline flex items-center gap-1"
+          className="text-sm text-gray-500 mb-6 cursor-pointer flex items-center gap-1"
         >
           <FaArrowLeft size={14} />
           Back

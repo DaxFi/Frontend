@@ -9,10 +9,12 @@ import {
   useUser,
   useSigner,
 } from "@account-kit/react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { generateHandle } from "@/lib/utils";
+import { generateHandle, walletAddressToHandle} from "@/lib/utils";
 import { getPendingAmountForEmail, claimFundsForEmail } from "@/app/utils/contracts";
 import provider from "@/lib/provider";
 
@@ -20,24 +22,51 @@ type AuthMethod = "google" | "email";
 
 const AuthContext = createContext<{
   user: User | null;
+  handle: string | null;
+  isLoading: boolean;
   signIn?: (method: AuthMethod) => Promise<void>;
   signOut?: () => Promise<void>;
-}>({ user: null });
+}>({ user: null, handle: null, isLoading: true });
 
 // TODO: Refactor isOnDaxFi logic.
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const redirectParam = searchParams.get("redirect") || "/dashboard";
+
+  const [redirectPath] = useState(redirectParam);
 
   const { isConnected, isDisconnected, isAuthenticating } = useSignerStatus();
   const { logout } = useLogout({
     onSuccess: () => {
-      router.push("/login");
+      window.location.href = "/login";
     },
   });
   const { authenticate } = useAuthenticate();
   const user = useUser();
   const signer = useSigner();
+
+  const [handle, setHandle] = useState<string | null>(null);
+
+  const isLoading = (isConnected && !user) || isAuthenticating;
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchHandle = async () => {
+      try {
+        const userWalletAddress = user.address as `0x${string}`;
+        const userHandle = await walletAddressToHandle(userWalletAddress);
+        setHandle(userHandle);
+      } catch (error) {
+        console.error("Error fetching user handle:", error);
+      }
+    };
+
+    fetchHandle();
+  }, [user]);
 
   useEffect(() => {
     const syncUserToFirestore = async () => {
@@ -71,7 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         }
 
-        router.push("/dashboard");
+        if ((isConnected && pathname === "/") || (pathname === "/login" && isConnected)) {
+          router.push(redirectPath);
+        } else if (isAuthenticating && pathname === "/") {
+          router.push("/");
+        }
       } catch (err) {
         console.error("Failed to sync user to Firestore", err);
       }
@@ -83,11 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDisconnected) {
       router.push("/login");
     }
-    // if ((isConnected && pathname === "/") || (pathname === "/login" && isConnected)) {
-    //   router.push("/dashboard");
-    // } else if (isAuthenticating && pathname === "/") {
-    //   router.push("/");
-    // }
   }, [isAuthenticating, isConnected, isDisconnected]);
 
   const handleGooglePopupLogin = () => {
@@ -106,7 +134,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await logout();
   };
 
-  return <AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, handle, isLoading, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);

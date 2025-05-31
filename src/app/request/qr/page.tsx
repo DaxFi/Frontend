@@ -7,20 +7,21 @@ import QRCode from "react-qr-code";
 import { useState } from "react";
 import { useUser } from "@account-kit/react";
 import { useTranslations } from "next-intl";
-import { walletAddressToHandle } from "@/lib/utils";
+import { useAuth } from "@/components/providers/authProvider";
 
 export default function ConfirmRequestPage() {
   const router = useRouter();
   const params = useSearchParams();
   const t = useTranslations("qr");
   const user = useUser();
+  const { handle } = useAuth();
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://daxfi.xyz";
 
   const amount = params.get("amount") || "0";
   const message = params.get("message") || "";
   const recipient = user?.email;
-  const requestLink = `${baseUrl}/confirm-transaction?recipient=${recipient}&amount=${amount}&message=${message}`;
+  const requestLink = `${baseUrl}/confirm-transaction?recipient=${handle || recipient}&amount=${amount}&message=${message}`;
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -46,23 +47,20 @@ export default function ConfirmRequestPage() {
         <p className="text-sm text-gray-500">{t("instructions")}</p>
 
         {/* QR Code */}
-        <div className="flex justify-center py-4">
+        <div className="flex justify-center py-2">
           <QRCode value={requestLink} size={128} />
         </div>
 
         {/* Summary */}
-        <div className="text-sm space-y-1">
-          <p>
-            <strong>{t("amount")}:</strong> ${amount}
-          </p>
-          <p>
-            <strong>{t("to")}:</strong> {user ? walletAddressToHandle(user.address) : null}
-          </p>
-          {message && (
+        <div className="flex justify-center w-[128px] mx-auto mb-8">
+          <div className="text-sm space-y-1 text-left">
             <p>
-              <strong>{t("message")}:</strong> {message}
+              <strong>{t("amount")}:</strong> ${amount}
             </p>
-          )}
+            <p>
+              <strong>{t("to")}:</strong> {handle}
+            </p>
+          </div>
         </div>
 
         {/* Buttons */}
