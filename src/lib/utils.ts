@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, query, where, or } from "firebase/firestore";
 import { db } from "./firebase";
 
 // Joins class names
@@ -166,17 +166,42 @@ async function parseTransaction(
   tx: RawTransaction,
   userAddress: string,
 ): Promise<ParsedTransaction> {
-  const isSender = tx.from.toLowerCase() === userAddress.toLowerCase();
+  let isSender = tx.from.toLowerCase() === userAddress.toLowerCase();
   const isError = tx.isError !== "0" || tx.txreceipt_status !== "1";
   const timestamp = new Date(Number(tx.timeStamp) * 1000);
+
+  const q = query(
+    collection(db, "pendingTransfers"),
+    or(
+      where("pendingTransactionHash", "==", tx.hash),
+      where("successTransactionHash", "==", tx.hash)
+    )
+  );
+  const querySnapshot = await getDocs(q);
+
+  let value = convertWeiToUSD(BigInt(tx.value));
+  let status = isError ? "Failed" : "Success";
+  let from = (await walletAddressToHandle(tx.from)) || tx.from;
+  let to = (await walletAddressToHandle(tx.to)) || tx.to;
+
+  if (!querySnapshot.empty) {
+    const doc = querySnapshot.docs[0].data();
+    value = `US$${doc.amount.toString()}`;
+
+    status = doc.claimed ? "Success" : "Pending";
+    console.log('REC WALLET', doc.recipientWallet);
+    to = doc.recipientEmail; // TODO: Add handle later
+    from = (await walletAddressToHandle(doc.senderWallet)) || doc.senderWallet;
+    isSender = doc.senderWallet == userAddress ? true : false;
+  }
 
   return {
     hash: tx.hash,
     type: isSender ? "Sent" : "Received",
-    to: (await walletAddressToHandle(tx.to)) || tx.to,
-    from: (await walletAddressToHandle(tx.from)) || tx.from,
-    value: convertWeiToUSD(BigInt(tx.value)),
-    status: isError ? "Failed" : "Success",
+    to: to,
+    from: from,
+    value: value,
+    status: status,
     direction: isSender ? "out" : "in",
     date: timestamp.toLocaleDateString(),
   };
