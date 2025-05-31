@@ -13,7 +13,7 @@ export const config = createConfig(
     enablePopupOauth: true,
     // optional config to override default session manager config
     sessionConfig: {
-      expirationTimeMs: 1000 * 60 * 60, // 60 minutes (default is 15 min)
+      expirationTimeMs: 1000 * 60 * 60 * 4, // 4 hours
     },
   },
   {
