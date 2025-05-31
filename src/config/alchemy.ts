@@ -23,7 +23,7 @@ export const config = createConfig(
         [{ type: "email" }],
         [{ type: "passkey" }, { type: "social", authProviderId: "google", mode: "popup" }],
       ],
-      addPasskeyOnSignup: true,
+      addPasskeyOnSignup: false, // disable passkey creation on signup
     },
   },
 );
