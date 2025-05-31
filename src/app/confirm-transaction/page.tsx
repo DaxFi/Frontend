@@ -58,7 +58,7 @@ export default function ConfirmSendPage() {
         });
 
         // TODO: Replace this for their actual name.
-        let senderUsername = user?.email ? user.email.split("@")[0] : "";
+        const senderUsername = user?.email ? user.email.split("@")[0] : "";
         await addDoc(collection(db, "pendingTransfers"), {
           pendingTransactionHash: tx.hash,
           successTransactionHash: null,
