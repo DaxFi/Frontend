@@ -14,7 +14,7 @@ import { useState } from "react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { generateHandle, walletAddressToHandle} from "@/lib/utils";
+import { generateHandle, walletAddressToHandle } from "@/lib/utils";
 import { getPendingAmountForEmail, claimFundsForEmail } from "@/app/utils/contracts";
 import provider from "@/lib/provider";
 
