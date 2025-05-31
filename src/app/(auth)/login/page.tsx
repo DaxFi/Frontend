@@ -4,12 +4,9 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 import { FaGoogle, FaEnvelope, FaSpinner } from "react-icons/fa";
 
 export default function LoginPage() {
-  const router = useRouter();
   const { signIn, user, isLoading } = useAuth();
   const t = useTranslations("login");
 
