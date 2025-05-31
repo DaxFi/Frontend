@@ -16,6 +16,7 @@ export default function SendPage() {
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [isInvalidRecipient, setIsInvalidRecipient] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const normalizeHandle = (val: string) => (val.startsWith("@") ? val.slice(1) : val);
 
@@ -29,12 +30,11 @@ export default function SendPage() {
 
     try {
       const inputType = inferRecipientInputType(normalizedHandle);
-
       if (inputType === "handle") {
         const results = await fetchHandleSuggestions(`@${normalizedHandle}`);
         isValidRecipient = results.includes(normalizedHandle);
       } else {
-        isValidRecipient = true; // Assume valid if it's an email or address
+        isValidRecipient = true;
       }
     } catch {
       isValidRecipient = false;
@@ -62,7 +62,6 @@ export default function SendPage() {
           <FaArrowLeft size={14} /> {t("back")}
         </button>
 
-        {/* Header */}
         <h1 className="text-2xl font-semibold text-center mb-8">{t("sendFunds")}</h1>
 
         <form className="space-y-6">
@@ -79,16 +78,45 @@ export default function SendPage() {
                 id="to"
                 type="text"
                 value={recipient}
-                onChange={(e) => {
-                  setRecipient(e.target.value);
-                  setIsInvalidRecipient(false); // reset error while typing
+                onChange={async (e) => {
+                  const val = e.target.value;
+                  setRecipient(val);
+                  setIsInvalidRecipient(false);
+                  if (val.length >= 3) {
+                    const query = val.startsWith("@") ? val : `@${val}`;
+                    const res = await fetchHandleSuggestions(query);
+                    setSuggestions(res);
+                  } else {
+                    setSuggestions([]);
+                  }
                 }}
                 placeholder={t("toPlaceholder")}
                 className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${
                   isInvalidRecipient ? "border-red-500" : "border-gray-300"
                 }`}
               />
+
+              {/* Suggestions */}
+              {suggestions.length > 0 && (
+                <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-48 overflow-auto">
+                  {suggestions.map((handle) => (
+                    <li
+                      key={handle}
+                      onClick={() => {
+                        setRecipient(`@${handle}`);
+                        setSuggestions([]);
+                        setIsInvalidRecipient(false);
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {handle}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
+
+            {/* Error */}
             <div
               className={`transition-all duration-300 ease-in-out overflow-hidden ${
                 isInvalidRecipient
@@ -131,7 +159,7 @@ export default function SendPage() {
             </div>
           </div>
 
-          {/* Optional Message */}
+          {/* Message */}
           <div>
             <label className="block text-sm font-medium mb-1" htmlFor="message">
               {t("optionalMessage")}
