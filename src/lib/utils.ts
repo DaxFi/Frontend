@@ -174,8 +174,8 @@ async function parseTransaction(
     collection(db, "pendingTransfers"),
     or(
       where("pendingTransactionHash", "==", tx.hash),
-      where("successTransactionHash", "==", tx.hash)
-    )
+      where("successTransactionHash", "==", tx.hash),
+    ),
   );
   const querySnapshot = await getDocs(q);
 
@@ -189,7 +189,7 @@ async function parseTransaction(
     value = `US$${doc.amount.toString()}`;
 
     status = doc.claimed ? "Success" : "Pending";
-    console.log('REC WALLET', doc.recipientWallet);
+    console.log("REC WALLET", doc.recipientWallet);
     to = doc.recipientEmail; // TODO: Add handle later
     from = (await walletAddressToHandle(doc.senderWallet)) || doc.senderWallet;
     isSender = doc.senderWallet == userAddress ? true : false;
