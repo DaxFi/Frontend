@@ -4,29 +4,27 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { FaGoogle, FaEnvelope } from "react-icons/fa";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { FaGoogle, FaEnvelope, FaSpinner } from "react-icons/fa";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn } = useAuth();
-
+  const { signIn, user, isLoading } = useAuth();
   const t = useTranslations("login");
 
-  const handleLogin = () => {
-    router.push("/dashboard");
-  };
+  if (isLoading || user) {
+    return (
+      <main className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <FaSpinner className="animate-spin h-8 w-8 text-gray-500" />
+      </main>
+    );
+  }
 
   return (
-    <main
-      className="h-screen flex items-center justify-center bg-gradient-to-br 
-        from-gray-50 to-gray-100"
-    >
+    <main className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-md bg-white rounded-xl shadow-md p-8 text-center">
-        <h1
-          className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
-            mb-6"
-        >
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r mb-6">
           <Image
             src="/daxfi-logo-web.png"
             alt="DaxFi Logo"
@@ -42,15 +40,14 @@ export default function LoginPage() {
           <Button
             onClick={() => signIn?.("google")}
             variant="default"
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center 
-                justify-center gap-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
           >
             <FaGoogle />
             {t("loginWithGoogle")}
           </Button>
 
           <Button
-            onClick={handleLogin}
+            onClick={() => {}}
             variant="outline"
             className="flex items-center justify-center gap-2"
             disabled

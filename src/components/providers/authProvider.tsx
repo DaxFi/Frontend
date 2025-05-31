@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
 import type { User } from "@account-kit/signer";
@@ -13,24 +13,32 @@ type AuthMethod = "google" | "email";
 const AuthContext = createContext<{
   user: User | null;
   handle: string | null;
+  isLoading: boolean;
   signIn?: (method: AuthMethod) => Promise<void>;
   signOut?: () => Promise<void>;
-}>({ user: null, handle: null });
+}>({ user: null, handle: null, isLoading: true });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const redirectParam = searchParams.get("redirect") || "/dashboard";
+
+  const [redirectPath] = useState(redirectParam);
 
   const { isConnected, isDisconnected, isAuthenticating } = useSignerStatus();
   const { logout } = useLogout({
     onSuccess: () => {
-      router.push("/login");
+      window.location.href = "/login";
     },
   });
   const { authenticate } = useAuthenticate();
   const user = useUser();
 
   const [handle, setHandle] = useState<string | null>(null);
+
+  const isLoading = (isConnected && !user) || isAuthenticating;
 
   useEffect(() => {
     if (!user) return;
@@ -77,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push("/login");
     }
     if ((isConnected && pathname === "/") || (pathname === "/login" && isConnected)) {
-      router.push("/dashboard");
+      router.push(redirectPath);
     } else if (isAuthenticating && pathname === "/") {
       router.push("/");
     }
@@ -100,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, handle, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, handle, isLoading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
