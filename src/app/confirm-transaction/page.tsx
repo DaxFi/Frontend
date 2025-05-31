@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { sendPayment } from "@/lib/payments";
 import { convertUSDToEther, resolveRecipientWalletAddress } from "@/lib/utils";
-import { useSigner } from "@account-kit/react";
+import { useSigner, useUser } from "@account-kit/react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
 import { sendPendingClaim } from "@/app/utils/contracts";
@@ -23,6 +23,7 @@ export default function ConfirmSendPage() {
   const { recipient, amount, message } = Object.fromEntries(params.entries());
 
   const signer = useSigner();
+  const user = useUser();
 
   const isOnDaxFi = async (recipientEmail: string): Promise<boolean> => {
     const q = query(collection(db, "users"), where("email", "==", recipientEmail));
@@ -50,21 +51,25 @@ export default function ConfirmSendPage() {
           amountEth: convertUSDToEther(Number(amount)).toString(),
         });
       } else {
-        await sendPendingClaim({
+        const tx = await sendPendingClaim({
           signer,
           recipientEmail: recipient,
           amountEth: convertUSDToEther(Number(amount)).toString(),
         });
 
         // TODO: Replace this for their actual name.
-        let recipientUsername = recipient.split("@")[0];
+        let senderUsername = user?.email ? user.email.split("@")[0] : "";
         await addDoc(collection(db, "pendingTransfers"), {
+          pendingTransactionHash: tx.hash,
+          successTransactionHash: null,
           recipientEmail: recipient,
-          senderName: recipientUsername,
+          senderName: senderUsername,
+          senderWallet: await signer.getAddress(),
+          recipientWallet: null,
           amount: amount,
           message: message,
-          createdAt: serverTimestamp()
-          // TODO: Add a boolean field called 'claimed' so we can control the history.
+          createdAt: serverTimestamp(),
+          claimed: false
         });
       }
       router.push(`/status?state=success&to=${recipient}&amount=${amount}`);
