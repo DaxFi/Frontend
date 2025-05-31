@@ -13,7 +13,16 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, collection, query, where, setDoc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  setDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { generateHandle, walletAddressToHandle } from "@/lib/utils";
 import { getPendingAmountForEmail, claimFundsForEmail } from "@/app/utils/contracts";
 import provider from "@/lib/provider";
@@ -91,7 +100,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
             await provider.waitForTransaction(tx.hash!);
 
-            const q = query(collection(db, "pendingTransfers"), where("recipientEmail", "==", user.email!));
+            const q = query(
+              collection(db, "pendingTransfers"),
+              where("recipientEmail", "==", user.email!),
+            );
             const querySnapshot = await getDocs(q);
 
             const updates = querySnapshot.docs.map(async (docSnap) => {
@@ -101,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               await updateDoc(ref, {
                 claimed: true,
                 successTransactionHash: tx.hash,
-                recipientWallet: await signer.getAddress()
+                recipientWallet: await signer.getAddress(),
               });
             });
 

@@ -69,7 +69,7 @@ export default function ConfirmSendPage() {
           amount: amount,
           message: message,
           createdAt: serverTimestamp(),
-          claimed: false
+          claimed: false,
         });
       }
       router.push(`/status?state=success&to=${recipient}&amount=${amount}`);
