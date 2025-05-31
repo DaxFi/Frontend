@@ -50,7 +50,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see the app in your brow
 
 ## 🚀 Deployment
 
-- TODO
+- This project is deployed via [Vercel](https://vercel.com).
 
 ## 🛑 Troubleshooting
 
