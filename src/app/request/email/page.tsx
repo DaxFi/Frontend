@@ -57,7 +57,7 @@ export default function RequestEmailPage() {
       router.push("/dashboard");
     } catch (err) {
       console.error("Firestore error:", err);
-      alert("Failed to send request.");
+      alert("Failed to send request link.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ export default function RequestEmailPage() {
             <input
               id="email"
               type="email"
-              placeholder="To"
+              placeholder="Send link to"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"

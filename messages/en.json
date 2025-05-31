@@ -73,7 +73,7 @@
     "message": "Message",
     "copy": "Copy code",
     "copied": "Copied!",
-    "send": "Send Request"
+    "send": "Send Request Link"
   },
   "chip": {
     "success": "Success",

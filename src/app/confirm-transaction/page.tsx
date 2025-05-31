@@ -8,7 +8,7 @@ import { sendPayment } from "@/lib/payments";
 import { convertUSDToEther, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner } from "@account-kit/react";
 import { db } from "@/lib/firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
 import { sendPendingClaim } from "@/app/utils/contracts";
 
 // TODO: Refactor isOnDaxFi and Pending Claim logic
@@ -54,6 +54,17 @@ export default function ConfirmSendPage() {
           signer,
           recipientEmail: recipient,
           amountEth: convertUSDToEther(Number(amount)).toString(),
+        });
+
+        // TODO: Replace this for their actual name.
+        let recipientUsername = recipient.split("@")[0];
+        await addDoc(collection(db, "pendingTransfers"), {
+          recipientEmail: recipient,
+          senderName: recipientUsername,
+          amount: amount,
+          message: message,
+          createdAt: serverTimestamp()
+          // TODO: Add a boolean field called 'claimed' so we can control the history.
         });
       }
       router.push(`/status?state=success&to=${recipient}&amount=${amount}`);
