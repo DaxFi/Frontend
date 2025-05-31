@@ -2,11 +2,13 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect } from "react";
-import { useSignerStatus, useLogout, useAuthenticate, useUser } from "@account-kit/react";
+import { useSignerStatus, useLogout, useAuthenticate, useUser, useSigner } from "@account-kit/react";
 import type { User } from "@account-kit/signer";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { generateHandle } from "@/lib/utils";
+import { getPendingAmountForEmail, claimFundsForEmail } from "@/app/utils/contracts";
+import provider from "@/lib/provider";
 
 type AuthMethod = "google" | "email";
 
@@ -16,6 +18,7 @@ const AuthContext = createContext<{
   signOut?: () => Promise<void>;
 }>({ user: null });
 
+// TODO: Refactor isOnDaxFi logic.
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -28,17 +31,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const { authenticate } = useAuthenticate();
   const user = useUser();
+  const signer = useSigner();
 
   useEffect(() => {
     const syncUserToFirestore = async () => {
       if (!user) return;
+      if (!signer) return;
 
       try {
         const { address } = user;
         const userRef = doc(db, "users", user.userId);
         const docSnap = await getDoc(userRef);
 
-        if (!docSnap.exists()) {
+        const isUserOnDaxFi = docSnap.exists()
+        if (!isUserOnDaxFi) {
+          const signerAddress = await signer?.getAddress();
+
+          const amount = BigInt(await getPendingAmountForEmail(user?.email));
+          if(amount > 0) {
+            const tx = await claimFundsForEmail({ signer, email: user.email!, recipientAddress: signerAddress });
+            await provider.waitForTransaction(tx.hash!);
+          }
+
           await setDoc(userRef, {
             email: user.email?.toLowerCase() || null,
             walletAddress: address,
@@ -46,6 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             handle: generateHandle(user.email),
           });
         }
+        
+        router.push("/dashboard");
       } catch (err) {
         console.error("Failed to sync user to Firestore", err);
       }
@@ -57,11 +73,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isDisconnected) {
       router.push("/login");
     }
-    if ((isConnected && pathname === "/") || (pathname === "/login" && isConnected)) {
-      router.push("/dashboard");
-    } else if (isAuthenticating && pathname === "/") {
-      router.push("/");
-    }
+    // if ((isConnected && pathname === "/") || (pathname === "/login" && isConnected)) {
+    //   router.push("/dashboard");
+    // } else if (isAuthenticating && pathname === "/") {
+    //   router.push("/");
+    // }
   }, [isAuthenticating, isConnected, isDisconnected]);
 
   const handleGooglePopupLogin = () => {

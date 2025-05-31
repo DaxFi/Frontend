@@ -7,7 +7,11 @@ import { useState } from "react";
 import { sendPayment } from "@/lib/payments";
 import { convertUSDToEther, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner } from "@account-kit/react";
+import { db } from "@/lib/firebase";
+import { collection, query, getDocs, where } from "firebase/firestore";
+import { sendPendingClaim } from "@/app/utils/contracts";
 
+// TODO: Refactor isOnDaxFi and Pending Claim logic
 export default function ConfirmSendPage() {
   const router = useRouter();
 
@@ -19,23 +23,41 @@ export default function ConfirmSendPage() {
   const { recipient, amount, message } = Object.fromEntries(params.entries());
 
   const signer = useSigner();
+  
+  const isOnDaxFi = async (
+    recipientEmail: string
+  ): Promise<boolean> => {
+    const q = query(collection(db, "users"), where("email", "==", recipientEmail));
+    const snapshot = await getDocs(q);
+    const userData = snapshot.docs[0]?.data();
+
+    return userData !== undefined;
+  };
 
   const handleConfirm = async () => {
     setIsSending(true);
     try {
-      const recipientAddress = await resolveRecipientWalletAddress(recipient);
       if (!signer) {
         console.error("Signer not available");
         setIsSending(false);
         router.push(`/status?state=error`);
         return;
       }
-      await sendPayment({
-        signer,
-        to: recipientAddress,
-        message,
-        amountEth: convertUSDToEther(Number(amount)).toString(),
-      });
+      if(await isOnDaxFi(recipient)) {
+        const recipientAddress = await resolveRecipientWalletAddress(recipient);
+        await sendPayment({
+          signer,
+          to: recipientAddress,
+          message,
+          amountEth: convertUSDToEther(Number(amount)).toString(),
+        });
+      } else {
+        await sendPendingClaim({
+          signer,
+          recipientEmail: recipient,
+          amountEth: convertUSDToEther(Number(amount)).toString()
+        });
+      }
       router.push(`/status?state=success&to=${recipient}&amount=${amount}`);
     } catch (error) {
       setIsSending(false);
