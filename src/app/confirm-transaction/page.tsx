@@ -14,9 +14,7 @@ import { sendPendingClaim } from "@/app/utils/contracts";
 // TODO: Refactor isOnDaxFi and Pending Claim logic
 export default function ConfirmSendPage() {
   const router = useRouter();
-
   const t = useTranslations("confirmTransaction");
-
   const [isSending, setIsSending] = useState(false);
 
   const params = useSearchParams();
@@ -29,7 +27,6 @@ export default function ConfirmSendPage() {
     const q = query(collection(db, "users"), where("email", "==", recipientEmail));
     const snapshot = await getDocs(q);
     const userData = snapshot.docs[0]?.data();
-
     return userData !== undefined;
   };
 
@@ -85,14 +82,11 @@ export default function ConfirmSendPage() {
   };
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br 
-        from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8"
-    >
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8 text-center">
-        <h1 className="text-2xl font-semibold mb-8">{t("confirmPayment")}</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
+        <h1 className="text-3xl font-bold mb-10 text-gray-800">{t("confirmPayment")}</h1>
 
-        <div className="text-left space-y-4 mb-8">
+        <div className="text-left space-y-4 mb-10 text-sm">
           <InfoRow label={t("to")} value={recipient} />
           <InfoRow label={t("amount")} value={`$${amount}`} />
           <InfoRow label={t("fees")} value="$0.00" />
@@ -102,7 +96,7 @@ export default function ConfirmSendPage() {
           <Button
             onClick={handleConfirm}
             disabled={isSending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center"
+            className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition"
           >
             {isSending ? (
               <svg
@@ -125,7 +119,12 @@ export default function ConfirmSendPage() {
               t("confirm")
             )}
           </Button>
-          <Button variant="outline" onClick={handleCancel} className="w-full">
+
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            className="w-full text-gray-700 border-gray-300"
+          >
             {t("cancel")}
           </Button>
         </div>
@@ -136,9 +135,9 @@ export default function ConfirmSendPage() {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-sm">
-      <span className="text-gray-600 font-medium">{label}</span>
-      <span className="text-gray-800">{value}</span>
+    <div className="flex justify-between">
+      <span className="text-gray-500 font-medium">{label}</span>
+      <span className="text-gray-900 font-semibold">{value}</span>
     </div>
   );
 }

@@ -25,6 +25,7 @@
     "html5-qrcode": "^2.3.8",
     "next": "15.3.2",
     "next-intl": "^4.1.0",
+    "qr-code-styling": "^1.9.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",

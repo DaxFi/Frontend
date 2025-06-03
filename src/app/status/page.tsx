@@ -24,12 +24,14 @@ function TransactionStatusContent() {
         recipient: to!,
       }),
       button: t("okButton"),
+      buttonStyle: "bg-gradient-to-r from-[#005AE2] to-[#0074FF] hover:brightness-110 text-white",
     },
     error: {
       icon: <FaExclamationTriangle className="text-red-500 text-5xl mb-4" />,
       title: t("failedTitle"),
       message: t("failedMessage"),
       button: t("retryButton"),
+      buttonStyle: "bg-red-600 hover:bg-red-700 text-white",
     },
   };
 
@@ -45,13 +47,13 @@ function TransactionStatusContent() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center">
+      <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
         <div className="flex justify-center">{status.icon}</div>
-        <h1 className="text-xl font-semibold mb-2">{status.title}</h1>
+        <h1 className="text-2xl font-bold mb-2 text-gray-800">{status.title}</h1>
         <p className="text-sm text-gray-600 mb-6">{status.message}</p>
         <Button
           onClick={handleClick}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+          className={`w-full font-semibold py-2 px-4 rounded-md transition ${status.buttonStyle}`}
         >
           {status.button}
         </Button>
@@ -63,8 +65,6 @@ function TransactionStatusContent() {
 export default function TransactionStatusPage() {
   return (
     <Suspense fallback={<div className="text-center py-16">...</div>}>
-      {" "}
-      {/* TODO: Loading state */}
       <TransactionStatusContent />
     </Suspense>
   );
