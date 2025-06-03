@@ -32,6 +32,23 @@ export default function HomePage() {
 
   const [showMenu, setShowMenu] = useState(false);
 
+  const mockSubscriptions = [
+    {
+      handle: "@filmtub",
+      description: "FilmClub+",
+      nextPayment: "Aug 15",
+    },
+    {
+      handle: "@yoga",
+      description: "Yoga class",
+      nextPayment: "Aug 1",
+    },
+  ];
+
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    (typeof mockSubscriptions)[0] | null
+  >(null);
+
   const fetchTransactions = async (address: `0x${string}`) => {
     try {
       const response = await fetch(`${BLOCK_EXPLORER_URL}${address}`);
@@ -133,6 +150,44 @@ export default function HomePage() {
             onClick={() => {}}
             disabled // Disable for now
           />
+        </div>
+
+        {/* Subscriptions */}
+        <div className="bg-gray-50 rounded-2xl shadow-md p-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Subscriptions</h3>
+          <ul className="divide-y divide-gray-200">
+            {mockSubscriptions.map((sub, i) => (
+              <li
+                key={i}
+                onClick={() => setSelectedSubscription(sub)}
+                className="cursor-pointer hover:bg-gray-100 rounded-lg px-2 -mx-2"
+              >
+                <div className="flex items-center justify-between py-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-sm">
+                      {i === 0 ? "👤" : "💵"}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900">{sub.handle}</span>
+                      <span className="text-xs text-gray-500">{sub.description}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-800">
+                    <div className="flex flex-col text-right space-y-0.5">
+                      <span className="text-xs text-gray-500">Next payment</span>
+                      <span className="font-medium">{sub.nextPayment}</span>
+                    </div>
+                    <button className="text-sm font-semibold text-red-600 hover:underline cursor-pointer">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-gray-500 pt-4 text-center">
+            All payments are processed by DaxFi.
+          </p>
         </div>
 
         {/* Transaction History */}
@@ -237,6 +292,31 @@ export default function HomePage() {
 
             <div className="pt-4">
               <Button onClick={() => setSelectedTx(null)} className="w-full">
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {selectedSubscription && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4">
+            <h3 className="text-lg font-bold">Subscription Details</h3>
+            <p className="text-sm">
+              <strong>To:</strong> {selectedSubscription.handle}
+            </p>
+            <p className="text-sm">
+              <strong>Description:</strong> {selectedSubscription.description}
+            </p>
+            <p className="text-sm">
+              <strong>Next Payment:</strong> {selectedSubscription.nextPayment}
+            </p>
+            <p className="text-sm text-gray-500">
+              This is a mock subscription. In the future, we will be able to manage, pause, or
+              update your subscriptions.
+            </p>
+            <div className="pt-4">
+              <Button onClick={() => setSelectedSubscription(null)} className="w-full">
                 Close
               </Button>
             </div>
