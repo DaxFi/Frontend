@@ -8,7 +8,7 @@ import { sendPayment } from "@/lib/payments";
 import { convertUSDToEther, isOnDaxFi, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner, useUser } from "@account-kit/react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendPendingClaim } from "@/app/utils/contracts";
 
 // TODO: Refactor isOnDaxFi and Pending Claim logic
