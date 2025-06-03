@@ -15,34 +15,32 @@ export default function RequestPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     const query = new URLSearchParams({
       amount: parseFloat(amount).toFixed(2),
       message,
     }).toString();
-
     router.push(`/request/qr?${query}`);
   };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 flex items-center cursor-pointer"
+          className="text-sm text-gray-500 mb-6 flex items-center gap-1 cursor-pointer hover:text-blue-500"
         >
-          <FaArrowLeft size={14} className="mr-1" />
+          <FaArrowLeft size={14} />
           {t("back")}
         </button>
 
         {/* Header */}
-        <h1 className="text-2xl font-semibold text-center mb-8">{t("title")}</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">{t("title")}</h1>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Amount Input */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium mb-1">
+            <label htmlFor="amount" className="block text-sm font-semibold mb-1 text-gray-700">
               {t("amount")}
             </label>
             <div className="relative">
@@ -66,14 +64,14 @@ export default function RequestPage() {
                   }
                   setAmount(e.target.value);
                 }}
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
               />
             </div>
           </div>
 
           {/* Optional Message */}
           <div>
-            <label htmlFor="message" className="block text-sm font-medium mb-1">
+            <label htmlFor="message" className="block text-sm font-semibold mb-1 text-gray-700">
               {t("message")}
             </label>
             <textarea
@@ -82,7 +80,7 @@ export default function RequestPage() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder={t("messagePlaceholder")}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
             />
           </div>
 
@@ -90,7 +88,7 @@ export default function RequestPage() {
           <Button
             disabled={!(parseFloat(amount) >= 0.01)}
             type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+            className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition"
           >
             {t("createRequest")}
           </Button>

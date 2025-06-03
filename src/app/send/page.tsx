@@ -53,21 +53,21 @@ export default function SendPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-lg bg-white rounded-xl shadow-md p-8">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 flex items-center gap-1 cursor-pointer"
+          className="text-sm text-gray-500 mb-6 flex items-center gap-1 cursor-pointer hover:text-blue-500"
         >
           <FaArrowLeft size={14} /> {t("back")}
         </button>
 
-        <h1 className="text-2xl font-semibold text-center mb-8">{t("sendFunds")}</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">{t("sendFunds")}</h1>
 
         <form className="space-y-6">
           {/* To */}
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="to">
+            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="to">
               {t("to")}
             </label>
             <div className="relative">
@@ -91,7 +91,7 @@ export default function SendPage() {
                   }
                 }}
                 placeholder={t("toPlaceholder")}
-                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${
+                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white ${
                   isInvalidRecipient ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -130,7 +130,7 @@ export default function SendPage() {
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="amount">
+            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="amount">
               {t("amount")}
             </label>
             <div className="relative">
@@ -143,7 +143,7 @@ export default function SendPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
                 onBlur={(e) => {
                   const raw = e.target.value.trim();
                   if (raw === "") return;
@@ -161,7 +161,7 @@ export default function SendPage() {
 
           {/* Message */}
           <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="message">
+            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="message">
               {t("optionalMessage")}
             </label>
             <textarea
@@ -169,14 +169,14 @@ export default function SendPage() {
               ref={messageRef}
               placeholder={t("addNote")}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
             />
           </div>
 
           <Button
             type="button"
             disabled={!recipient || Number(amount) < 0.01}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+            className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition"
             onClick={handleSubmit}
           >
             {t("reviewAndSend")}

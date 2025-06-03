@@ -11,7 +11,7 @@
     "fetchingBalance": "Fetching balance...",
     "send": "Send",
     "request": "Request",
-    "recentActivity": "Recent activity",
+    "transactionHistory": "Transaction History",
     "noRecentActivity": "You haven't made any transactions yet.",
     "sendFirstTransfer": "Send your first transfer",
     "logout": "Logout",
@@ -76,7 +76,7 @@
     "send": "Send Request Link"
   },
   "chip": {
-    "success": "Success",
+    "success": "Completed",
     "error": "Error",
     "pending": "Pending"
   }
