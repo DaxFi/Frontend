@@ -219,3 +219,17 @@ export function truncate(str: string, length: number = 15, separator: string = "
   if (str.length <= length) return str;
   return str.slice(0, length - separator.length) + separator;
 }
+
+export async function isOnDaxFi(recipient: string): Promise<boolean> {
+  const recipientType = inferRecipientInputType(recipient);
+  const fieldMap = {
+    email: "email",
+    handle: "handle",
+    address: "walletAddress",
+  } as const;
+  const queryField = fieldMap[recipientType];
+  const q = query(collection(db, "users"), where(queryField, "==", recipient));
+  const snapshot = await getDocs(q);
+  const userData = snapshot.docs[0]?.data();
+  return userData !== undefined;
+}

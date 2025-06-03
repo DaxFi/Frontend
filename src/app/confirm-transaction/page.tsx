@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { sendPayment } from "@/lib/payments";
-import {
-  convertUSDToEther,
-  inferRecipientInputType,
-  resolveRecipientWalletAddress,
-} from "@/lib/utils";
+import { convertUSDToEther, isOnDaxFi, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner, useUser } from "@account-kit/react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
@@ -26,20 +22,6 @@ export default function ConfirmSendPage() {
 
   const signer = useSigner();
   const user = useUser();
-
-  const isOnDaxFi = async (recipient: string): Promise<boolean> => {
-    const recipientType = inferRecipientInputType(recipient);
-    const fieldMap = {
-      email: "email",
-      handle: "handle",
-      address: "walletAddress",
-    } as const;
-    const queryField = fieldMap[recipientType];
-    const q = query(collection(db, "users"), where(queryField, "==", recipient));
-    const snapshot = await getDocs(q);
-    const userData = snapshot.docs[0]?.data();
-    return userData !== undefined;
-  };
 
   const handleConfirm = async () => {
     setIsSending(true);
