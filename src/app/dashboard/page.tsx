@@ -4,23 +4,13 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import {
-  FaDollarSign,
-  FaPaperPlane,
-  FaDownload,
-  FaMoneyBill,
-} from "react-icons/fa";
+import { FaDollarSign, FaPaperPlane, FaDownload, FaMoneyBill } from "react-icons/fa";
 import { useSigner, useUser } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
-import {
-  ParsedTransaction,
-  formatEthToUSD,
-  parseTransactions,
-  truncate,
-} from "@/lib/utils";
+import { ParsedTransaction, formatEthToUSD, parseTransactions, truncate } from "@/lib/utils";
 import Image from "next/image";
 
 const BLOCK_EXPLORER_URL =
