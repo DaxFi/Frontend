@@ -15,7 +15,7 @@ import {
   FaQrcode,
 } from "react-icons/fa";
 import { useSigner, useUser } from "@account-kit/react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
@@ -46,7 +46,7 @@ export default function HomePage() {
     {
       handle: "@frenchwithmarie",
       image: "/france.png",
-      description: "French classes with Marie",
+      description: "French with Marie",
       nextPayment: "Aug 1",
     },
   ];
@@ -178,14 +178,14 @@ export default function HomePage() {
               onClick: () => router.push("/request"),
             },
             {
-              icon: <FaSyncAlt size={16} />,
-              label: t("newSubscription"),
-              onClick: () => router.push("/new-subscription"),
-            },
-            {
               icon: <FaQrcode size={16} />,
               label: t("scanQrCode"),
               onClick: () => router.push("/scan-qr"),
+            },
+            {
+              icon: <FaSyncAlt size={16} />,
+              label: t("newSubscription"),
+              onClick: () => router.push("/new-subscription"),
             },
           ].map((btn, i) => (
             <ActionButton

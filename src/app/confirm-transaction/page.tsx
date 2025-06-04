@@ -91,7 +91,7 @@ export default function ConfirmSendPage() {
       <div
         className={`w-full max-w-md rounded-2xl shadow-xl p-8 text-center ${isDark ? "bg-[#1A1B1F]" : "bg-white"}`}
       >
-        <h1 className={`text-3xl font-bold mb-10 ${isDark ? "text-white" : "text-gray-800"}`}>
+        <h1 className={`text-2xl font-bold mb-10 ${isDark ? "text-white" : "text-gray-800"}`}>
           {t("confirmPayment")}
         </h1>
 

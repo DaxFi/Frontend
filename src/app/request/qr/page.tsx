@@ -56,7 +56,7 @@ export default function ConfirmRequestPage() {
         </button>
 
         {/* Title */}
-        <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+        <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
           {t("title")}
         </h1>
         <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>

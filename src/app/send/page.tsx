@@ -70,7 +70,7 @@ export default function SendPage() {
         </button>
 
         <h1
-          className={`text-3xl font-bold text-center mb-8 ${isDark ? "text-white" : "text-gray-800"}`}
+          className={`text-2xl font-bold text-center mb-8 ${isDark ? "text-white" : "text-gray-800"}`}
         >
           {t("sendFunds")}
         </h1>
