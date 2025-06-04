@@ -63,7 +63,7 @@ export default function RequestEmailPage() {
           className="text-sm text-gray-500 mb-6 cursor-pointer flex items-center gap-1"
         >
           <FaArrowLeft size={14} />
-          Back
+          {t("back")}
         </button>
 
         <h1 className="text-2xl font-semibold text-center mb-8">{t("title")}</h1>

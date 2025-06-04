@@ -72,7 +72,8 @@
     "sending": "Sending...",
     "modalTitle": "Request Sent",
     "modalBody": "An email request was sent to",
-    "returnButton": "Return to Dashboard"
+    "returnButton": "Return to Dashboard",
+    "back": "Back"
   },
   "qr": {
     "back": "Back",
