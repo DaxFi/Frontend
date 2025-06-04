@@ -37,6 +37,6 @@ module.exports = withAccountKitUi(
         },
       },
     },
-    plugins: [],
+    plugins: [require("flowbite/plugin")],
   }),
 );
