@@ -10,12 +10,14 @@ import { useSigner, useUser } from "@account-kit/react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
 import { sendPendingClaim } from "@/app/utils/contracts";
+import { useTheme } from "@/components/providers/appThemeProvider";
 
-// TODO: Refactor isOnDaxFi and Pending Claim logic
 export default function ConfirmSendPage() {
   const router = useRouter();
   const t = useTranslations("confirmTransaction");
   const [isSending, setIsSending] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const params = useSearchParams();
   const { recipient, amount, message } = Object.fromEntries(params.entries());
@@ -54,7 +56,6 @@ export default function ConfirmSendPage() {
           amountEth: convertUSDToEther(Number(amount)).toString(),
         });
 
-        // TODO: Replace this for their actual name.
         const senderUsername = user?.email ? user.email.split("@")[0] : "";
         await addDoc(collection(db, "pendingTransfers"), {
           pendingTransactionHash: tx.hash,
@@ -82,14 +83,22 @@ export default function ConfirmSendPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
-        <h1 className="text-3xl font-bold mb-10 text-gray-800">{t("confirmPayment")}</h1>
+    <main
+      className={`min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 ${
+        isDark ? "bg-[#0D0E12] text-white" : "bg-gradient-to-br from-gray-50 to-gray-100 text-black"
+      }`}
+    >
+      <div
+        className={`w-full max-w-md rounded-2xl shadow-xl p-8 text-center ${isDark ? "bg-[#1A1B1F]" : "bg-white"}`}
+      >
+        <h1 className={`text-3xl font-bold mb-10 ${isDark ? "text-white" : "text-gray-800"}`}>
+          {t("confirmPayment")}
+        </h1>
 
         <div className="text-left space-y-4 mb-10 text-sm">
-          <InfoRow label={t("to")} value={recipient} />
-          <InfoRow label={t("amount")} value={`$${amount}`} />
-          <InfoRow label={t("fees")} value="$0.00" />
+          <InfoRow label={t("to")} value={recipient} isDark={isDark} />
+          <InfoRow label={t("amount")} value={`$${amount}`} isDark={isDark} />
+          <InfoRow label={t("fees")} value="$0.00" isDark={isDark} />
         </div>
 
         <div className="space-y-3">
@@ -123,7 +132,11 @@ export default function ConfirmSendPage() {
           <Button
             variant="outline"
             onClick={handleCancel}
-            className="w-full text-gray-700 border-gray-300"
+            className={`w-full border font-medium ${
+              isDark
+                ? "text-white border-gray-600 hover:bg-gray-800"
+                : "text-gray-700 border-gray-300 hover:bg-gray-100"
+            }`}
           >
             {t("cancel")}
           </Button>
@@ -133,11 +146,11 @@ export default function ConfirmSendPage() {
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value, isDark }: { label: string; value: string; isDark?: boolean }) {
   return (
     <div className="flex justify-between">
-      <span className="text-gray-500 font-medium">{label}</span>
-      <span className="text-gray-900 font-semibold">{value}</span>
+      <span className={`${isDark ? "text-gray-400" : "text-gray-500"} font-medium`}>{label}</span>
+      <span className={`${isDark ? "text-white" : "text-gray-900"} font-semibold`}>{value}</span>
     </div>
   );
 }

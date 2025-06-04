@@ -21,6 +21,7 @@ import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
 import { ParsedTransaction, formatEthToUSD, parseTransactions, truncate } from "@/lib/utils";
 import Image from "next/image";
+import { useTheme } from "@/components/providers/appThemeProvider";
 
 const BLOCK_EXPLORER_URL =
   "https://block-explorer.testnet.wonderchain.org/api?module=account&action=txlist&page=1&offset=10&sort=desc&endblock=99999999&startblock=0&address=";
@@ -36,7 +37,9 @@ export default function HomePage() {
   const [transactions, setTransactions] = useState<ParsedTransaction[] | undefined>();
   const [selectedTx, setSelectedTx] = useState<ParsedTransaction | null>(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+
+  const { theme, toggleTheme } = useTheme();
+  const darkMode = theme === "dark";
 
   const mockSubscriptions = [
     { handle: "@filmtub", image: "/movie.png", description: "FilmClub+", nextPayment: "Aug 15" },
@@ -93,7 +96,7 @@ export default function HomePage() {
             />
           </h1>
           <div className="flex items-center gap-4">
-            <button onClick={() => setDarkMode(!darkMode)} className="text-xl">
+            <button onClick={toggleTheme} className="text-xl cursor-pointer">
               {darkMode ? <FaSun /> : <FaMoon />}
             </button>
             <div className="relative">

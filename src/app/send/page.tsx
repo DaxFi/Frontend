@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { fetchHandleSuggestions, inferRecipientInputType } from "@/lib/utils";
+import { useTheme } from "@/components/providers/appThemeProvider";
 
 export default function SendPage() {
   const router = useRouter();
@@ -17,6 +18,9 @@ export default function SendPage() {
   const [amount, setAmount] = useState("");
   const [isInvalidRecipient, setIsInvalidRecipient] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const normalizeHandle = (val: string) => (val.startsWith("@") ? val.slice(1) : val);
 
@@ -52,26 +56,37 @@ export default function SendPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8">
-        {/* Back Button */}
+    <main
+      className={`min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 ${isDark ? "bg-[#0D0E12] text-white" : "bg-gradient-to-br from-gray-50 to-gray-100 text-black"}`}
+    >
+      <div
+        className={`w-full max-w-lg rounded-2xl shadow-xl p-8 ${isDark ? "bg-[#1C1F26]" : "bg-white"}`}
+      >
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 mb-6 flex items-center gap-1 cursor-pointer hover:text-blue-500"
+          className={`text-sm mb-6 flex items-center gap-1 cursor-pointer ${isDark ? "text-gray-400 hover:text-blue-400" : "text-gray-500 hover:text-blue-500"}`}
         >
           <FaArrowLeft size={14} /> {t("back")}
         </button>
 
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">{t("sendFunds")}</h1>
+        <h1
+          className={`text-3xl font-bold text-center mb-8 ${isDark ? "text-white" : "text-gray-800"}`}
+        >
+          {t("sendFunds")}
+        </h1>
 
         <form className="space-y-6">
-          {/* To */}
           <div>
-            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="to">
+            <label
+              className={`block text-sm font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              htmlFor="to"
+            >
               {t("to")}
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <span
+                className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+              >
                 <FaUser />
               </span>
               <input
@@ -91,14 +106,13 @@ export default function SendPage() {
                   }
                 }}
                 placeholder={t("toPlaceholder")}
-                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white ${
-                  isInvalidRecipient ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${isDark ? `bg-[#0D0E12] text-white ${isInvalidRecipient ? "border-red-500" : "border-gray-700"}` : `bg-white text-black ${isInvalidRecipient ? "border-red-500" : "border-gray-300"}`}`}
               />
 
-              {/* Suggestions */}
               {suggestions.length > 0 && (
-                <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-48 overflow-auto">
+                <ul
+                  className={`absolute z-10 mt-1 w-full border rounded-md shadow-md max-h-48 overflow-auto ${isDark ? "bg-[#1C1F26] border-gray-700" : "bg-white border-gray-300"}`}
+                >
                   {suggestions.map((handle) => (
                     <li
                       key={handle}
@@ -107,7 +121,7 @@ export default function SendPage() {
                         setSuggestions([]);
                         setIsInvalidRecipient(false);
                       }}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      className={`px-4 py-2 cursor-pointer ${isDark ? "hover:bg-gray-800" : "hover:bg-gray-100"}`}
                     >
                       {handle}
                     </li>
@@ -116,7 +130,6 @@ export default function SendPage() {
               )}
             </div>
 
-            {/* Error */}
             <div
               className={`transition-all duration-300 ease-in-out overflow-hidden ${
                 isInvalidRecipient
@@ -128,13 +141,17 @@ export default function SendPage() {
             </div>
           </div>
 
-          {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="amount">
+            <label
+              className={`block text-sm font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              htmlFor="amount"
+            >
               {t("amount")}
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <span
+                className={`absolute inset-y-0 left-0 flex items-center pl-3 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+              >
                 <FaDollarSign />
               </span>
               <input
@@ -143,7 +160,7 @@ export default function SendPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
+                className={`w-full pl-10 pr-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${isDark ? "bg-[#0D0E12] text-white border-gray-700" : "bg-white text-black border-gray-300"}`}
                 onBlur={(e) => {
                   const raw = e.target.value.trim();
                   if (raw === "") return;
@@ -159,9 +176,11 @@ export default function SendPage() {
             </div>
           </div>
 
-          {/* Message */}
           <div>
-            <label className="block text-sm font-semibold mb-1 text-gray-700" htmlFor="message">
+            <label
+              className={`block text-sm font-semibold mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              htmlFor="message"
+            >
               {t("optionalMessage")}
             </label>
             <textarea
@@ -169,7 +188,7 @@ export default function SendPage() {
               ref={messageRef}
               placeholder={t("addNote")}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none bg-white"
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${isDark ? "bg-[#0D0E12] text-white border-gray-700" : "bg-white text-black border-gray-300"}`}
             />
           </div>
 

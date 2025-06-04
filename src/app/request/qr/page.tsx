@@ -8,6 +8,7 @@ import { useUser } from "@account-kit/react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/components/providers/authProvider";
 import DynamicDaxfiQR from "@/components/ui/qr";
+import { useTheme } from "@/components/providers/appThemeProvider";
 
 export default function ConfirmRequestPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function ConfirmRequestPage() {
   const t = useTranslations("qr");
   const user = useUser();
   const { handle } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://daxfi.xyz";
   const amount = params.get("amount") || "0";
@@ -31,30 +34,48 @@ export default function ConfirmRequestPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center space-y-6">
+    <main
+      className={`min-h-screen flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 ${
+        isDark ? "bg-[#0D0E12] text-white" : "bg-gradient-to-br from-gray-50 to-gray-100 text-black"
+      }`}
+    >
+      <div
+        className={`w-full max-w-md rounded-2xl shadow-xl p-8 text-center space-y-6 ${
+          isDark ? "bg-[#1C1C1E]" : "bg-white"
+        }`}
+      >
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-500 flex items-center gap-1 cursor-pointer hover:text-blue-500"
+          className={`text-sm flex items-center gap-1 cursor-pointer hover:text-blue-500 ${
+            isDark ? "text-gray-300" : "text-gray-500"
+          }`}
         >
           <FaArrowLeft size={14} />
           {t("back")}
         </button>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-800">{t("title")}</h1>
-        <p className="text-sm text-gray-500">{t("instructions")}</p>
+        <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+          {t("title")}
+        </h1>
+        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+          {t("instructions")}
+        </p>
 
         {/* Branded QR */}
         <div className="flex justify-center py-2">
-          <div className="rounded-xl shadow-xl bg-white p-1 w-fit border border-gray-200">
+          <div
+            className={`rounded-xl shadow-xl p-1 w-fit border ${
+              isDark ? "bg-[#0D0E12] border-gray-700" : "bg-white border-gray-200"
+            }`}
+          >
             <DynamicDaxfiQR link={requestLink} />
           </div>
         </div>
 
         {/* Summary */}
-        <div className="text-sm text-gray-800 space-y-1">
+        <div className={`text-sm space-y-1 ${isDark ? "text-gray-200" : "text-gray-800"}`}>
           <p>
             <strong>{t("amount")}:</strong> ${amount}
           </p>
@@ -67,14 +88,15 @@ export default function ConfirmRequestPage() {
         <div className="space-y-3 pt-4">
           <Button
             onClick={handleCopy}
-            className={`w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition ${
-              copied ? "bg-green-600" : "bg-[#005AE2]"
-            } text-white hover:brightness-110`}
+            className={`w-full font-semibold py-2 px-4 rounded-md transition flex items-center justify-center gap-2 ${
+              copied
+                ? "bg-zinc-800 text-white dark:bg-zinc-200 dark:text-black"
+                : "bg-gradient-to-r from-[#005AE2] to-[#0074FF] text-white hover:brightness-110"
+            }`}
           >
-            {copied && <FaCheck className="mr-2" />}
+            {copied && <FaCheck />}
             {copied ? t("copied") : t("copy")}
           </Button>
-
           <Button
             variant="default"
             className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition"

@@ -1,5 +1,8 @@
 import { cn } from "@/lib/utils"; // utility to join classNames (optional)
 import React from "react";
+// import { useTheme } from "@/components/providers/appThemeProvider";
+// const { theme } = useTheme();
+// const isDark = theme === "dark";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "default" | "outline";

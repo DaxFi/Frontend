@@ -8,6 +8,7 @@ import { Providers as AlchemyProvider } from "@/components/providers/alchemyProv
 import { cookieToInitialState } from "@account-kit/core";
 import { headers } from "next/headers";
 import { config } from "@/config/alchemy";
+import { AppThemeProvider } from "@/components/providers/appThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,13 +38,15 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AlchemyProvider initialState={initialState}>
-          <AuthProvider>
-            <NextIntlClientProvider>{children}</NextIntlClientProvider>
-          </AuthProvider>
-        </AlchemyProvider>
-      </body>
+      <AppThemeProvider>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <AlchemyProvider initialState={initialState}>
+            <AuthProvider>
+              <NextIntlClientProvider>{children}</NextIntlClientProvider>
+            </AuthProvider>
+          </AlchemyProvider>
+        </body>
+      </AppThemeProvider>
     </html>
   );
 }
