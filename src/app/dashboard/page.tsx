@@ -4,7 +4,16 @@ import { useAuth } from "@/components/providers/authProvider";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { FaDollarSign, FaPaperPlane, FaDownload, FaMoneyBill } from "react-icons/fa";
+import {
+  FaDollarSign,
+  FaPaperPlane,
+  FaDownload,
+  FaMoneyBill,
+  FaSun,
+  FaMoon,
+  FaSyncAlt,
+  FaQrcode,
+} from "react-icons/fa";
 import { useSigner, useUser } from "@account-kit/react";
 import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
@@ -18,29 +27,23 @@ const BLOCK_EXPLORER_URL =
 
 export default function HomePage() {
   const router = useRouter();
-
   const t = useTranslations("dashboard");
   const { signOut } = useAuth();
-
   const signer = useSigner();
   const user = useUser();
 
   const [balance, setBalance] = useState<bigint | null>(null);
   const [transactions, setTransactions] = useState<ParsedTransaction[] | undefined>();
-
   const [selectedTx, setSelectedTx] = useState<ParsedTransaction | null>(null);
-
   const [showMenu, setShowMenu] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   const mockSubscriptions = [
+    { handle: "@filmtub", image: "/movie.png", description: "FilmClub+", nextPayment: "Aug 15" },
     {
-      handle: "@filmtub",
-      description: "FilmClub+",
-      nextPayment: "Aug 15",
-    },
-    {
-      handle: "@yoga",
-      description: "Yoga class",
+      handle: "@frenchwithmarie",
+      image: "/france.png",
+      description: "French classes with Marie",
       nextPayment: "Aug 1",
     },
   ];
@@ -55,20 +58,14 @@ export default function HomePage() {
       if (!response.ok) throw new Error("Failed to fetch transactions");
       const data = await response.json();
       const parsedTransactions = await parseTransactions(data.result, address);
-      console.log("TRANS: ", parsedTransactions);
       setTransactions(parsedTransactions);
     } catch (error) {
       console.error("Error fetching transactions:", error);
-      return [];
     }
   };
 
   useEffect(() => {
-    const client = createPublicClient({
-      chain: baseWonderTestnet,
-      transport: http(RPC_URL),
-    });
-
+    const client = createPublicClient({ chain: baseWonderTestnet, transport: http(RPC_URL) });
     (async () => {
       try {
         const address = await signer?.getAddress();
@@ -81,103 +78,157 @@ export default function HomePage() {
   }, [user]);
 
   return (
-    <main className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <main
+      className={`${darkMode ? "bg-[#0D0E12] text-white" : "bg-white text-black"} min-h-screen py-6 px-4 sm:px-6 lg:px-8 font-sans`}
+    >
       <div className="max-w-3xl mx-auto space-y-6">
+        {/* Header with Logo, Avatar and Toggle */}
         <div className="flex items-center justify-between">
-          <h1
-            className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r 
-                from-blue-600 to-teal-400"
-          >
-            <Image src="/daxfi-logo-web.png" alt="DaxFi Logo" width={100} height={100} />
+          <h1 className="text-3xl font-bold">
+            <Image
+              src={darkMode ? "/daxfi-logo-web-white.png" : "/daxfi-logo-web.png"}
+              alt="DaxFi Logo"
+              width={100}
+              height={100}
+            />
           </h1>
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 cursor-pointer"
-            >
-              <Image src="/avatar-placeholder.png" alt="User Avatar" width={40} height={40} />
+          <div className="flex items-center gap-4">
+            <button onClick={() => setDarkMode(!darkMode)} className="text-xl">
+              {darkMode ? <FaSun /> : <FaMoon />}
             </button>
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg text-sm text-gray-700 z-50 border">
-                <button
-                  onClick={signOut}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  Log out
-                </button>
-              </div>
-            )}
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="w-10 h-10 rounded-full overflow-hidden border border-gray-700 cursor-pointer"
+              >
+                <Image src="/avatar-placeholder.png" alt="User Avatar" width={40} height={40} />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-32 bg-[#1C1F26] rounded-md shadow-lg text-sm text-white z-50 border border-gray-700">
+                  <button
+                    onClick={signOut}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-800 cursor-pointer"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        {/* Balance */}
-        <div className="bg-gray-50 p-6 rounded-2xl shadow-md text-center">
+        {/* Balance card */}
+        <div
+          className={`${darkMode ? "bg-[#16181D]" : "bg-gray-50"} p-6 rounded-2xl shadow-md text-center`}
+        >
           {balance === null ? (
             <>
-              <div className="w-6 h-6 mx-auto border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-              <p className="text-sm text-gray-400 mt-4">{t("fetchingBalance")}</p>
+              <div className="w-6 h-6 mx-auto border-4 border-gray-700 border-t-blue-500 rounded-full animate-spin" />
+              <p className="text-sm text-gray-500 mt-4">{t("fetchingBalance")}</p>
             </>
           ) : (
             <>
-              <p className="text-sm text-gray-500">Balance</p>
-              <h2 className="text-3xl font-bold text-gray-800">{formatEthToUSD(balance)}</h2>
-              <p className="text-xs text-gray-400 mt-1">Instant Payments</p>
+              <p className="text-sm text-gray-400">Balance</p>
+              <h2 className={`${darkMode ? "text-white" : "text-gray-800"} text-3xl font-bold`}>
+                {formatEthToUSD(balance)}
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">Instant Payments</p>
             </>
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ActionButton
-            icon={<FaDollarSign size={20} />}
-            label={t("addFunds")}
-            onClick={() => {}}
-            disabled
-          />
-          <ActionButton
-            icon={<FaPaperPlane size={20} />}
-            label={t("send")}
-            onClick={() => router.push("/send")}
-          />
-          <ActionButton
-            icon={<FaDownload size={20} />}
-            label={t("request")}
-            onClick={() => router.push("/request")}
-          />
-          <ActionButton
-            icon={<FaMoneyBill size={20} />}
-            label={t("withdraw")}
-            onClick={() => {}}
-            disabled // Disable for now
-          />
+        {/* Quick actions */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+          {/* Render disabled buttons first */}
+          {[
+            {
+              icon: <FaDollarSign size={16} />,
+              label: t("addFunds"),
+              onClick: () => {},
+              disabled: true,
+            },
+            {
+              icon: <FaMoneyBill size={16} />,
+              label: t("withdraw"),
+              onClick: () => {},
+              disabled: true,
+            },
+          ].map((btn, i) => (
+            <ActionButton
+              key={`disabled-${i}`}
+              icon={btn.icon}
+              label={btn.label}
+              onClick={btn.onClick}
+              disabled={btn.disabled}
+            />
+          ))}
+
+          {/* Then render enabled buttons */}
+          {[
+            {
+              icon: <FaPaperPlane size={16} />,
+              label: t("send"),
+              onClick: () => router.push("/send"),
+            },
+            {
+              icon: <FaDownload size={16} />,
+              label: t("request"),
+              onClick: () => router.push("/request"),
+            },
+            {
+              icon: <FaSyncAlt size={16} />,
+              label: t("newSubscription"),
+              onClick: () => router.push("/new-subscription"),
+            },
+            {
+              icon: <FaQrcode size={16} />,
+              label: t("scanQrCode"),
+              onClick: () => router.push("/scan-qr"),
+            },
+          ].map((btn, i) => (
+            <ActionButton
+              key={`enabled-${i}`}
+              icon={btn.icon}
+              label={btn.label}
+              onClick={btn.onClick}
+            />
+          ))}
         </div>
 
         {/* Subscriptions */}
-        <div className="bg-gray-50 rounded-2xl shadow-md p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Subscriptions</h3>
-          <ul className="divide-y divide-gray-200">
+        <div className={`${darkMode ? "bg-[#16181D]" : "bg-gray-50"} rounded-2xl shadow-md p-4`}>
+          <h3 className={`${darkMode ? "text-white" : "text-gray-800"} text-lg font-semibold mb-4`}>
+            Your Subscriptions
+          </h3>
+          <ul className={`${darkMode ? "divide-y divide-gray-800" : ""}`}>
             {mockSubscriptions.map((sub, i) => (
               <li
                 key={i}
                 onClick={() => setSelectedSubscription(sub)}
-                className="cursor-pointer hover:bg-gray-100 rounded-lg px-2 -mx-2"
+                className={`${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} cursor-pointer rounded-lg px-2 -mx-2`}
               >
                 <div className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-sm">
-                      {i === 0 ? "👤" : "💵"}
+                    <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 text-sm">
+                      {/* {i === 0 ? "👤" : "💵"} */}
+                      <Image src={sub.image} alt="Subscription Icon" width={30} height={30} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-900">{sub.handle}</span>
-                      <span className="text-xs text-gray-500">{sub.description}</span>
+                      <span
+                        className={`${darkMode ? "text-white" : "text-gray-900"} text-sm font-medium`}
+                      >
+                        {sub.handle}
+                      </span>
+                      <span className="text-xs text-gray-400">{sub.description}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-800">
+                  <div
+                    className={`${darkMode ? "text-white" : "text-gray-800"} flex items-center gap-4 text-sm`}
+                  >
                     <div className="flex flex-col text-right space-y-0.5">
-                      <span className="text-xs text-gray-500">Next payment</span>
+                      <span className="text-xs text-gray-400">Next payment</span>
                       <span className="font-medium">{sub.nextPayment}</span>
                     </div>
-                    <button className="text-sm font-semibold text-red-600 hover:underline cursor-pointer">
+                    <button className="text-sm font-semibold text-red-500 hover:underline cursor-pointer">
                       Cancel
                     </button>
                   </div>
@@ -186,21 +237,23 @@ export default function HomePage() {
             ))}
           </ul>
           <p className="text-xs text-gray-500 pt-4 text-center">
-            All payments are processed by DaxFi.
+            All payments are feeless and processed by DaxFi.
           </p>
         </div>
 
-        {/* Transaction History */}
-        <div className="bg-gray-50 rounded-2xl shadow-md p-4">
-          <h3 className="text-lg font-medium text-gray-800 mb-4">Transaction History</h3>
+        {/* Transactions */}
+        <div className={`${darkMode ? "bg-[#16181D]" : "bg-gray-50"} rounded-2xl shadow-md p-4`}>
+          <h3 className={`${darkMode ? "text-white" : "text-gray-800"} text-lg font-medium mb-4`}>
+            Transaction History
+          </h3>
           {!transactions ? (
             <div className="animate-pulse space-y-4">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                  <div className="w-10 h-10 bg-gray-800 rounded-full" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-800 rounded w-1/2"></div>
                   </div>
                 </div>
               ))}
@@ -208,30 +261,29 @@ export default function HomePage() {
           ) : transactions.length === 0 ? (
             <p className="text-sm text-gray-500">No recent transactions.</p>
           ) : (
-            <ul className="space-y-4">
+            <ul className={`${darkMode ? "divide-y divide-gray-800" : ""}`}>
               {transactions.map((item) => (
                 <li
                   key={item.hash}
                   onClick={() => setSelectedTx(item)}
-                  className="flex items-center space-x-4 cursor-pointer hover:bg-gray-100 p-2 rounded-lg"
+                  className={`${darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100"} flex items-center space-x-4 cursor-pointer p-2 rounded-lg`}
                 >
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg">
+                  <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-lg">
                     {"💸"}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800">
+                    <p
+                      className={`${darkMode ? "text-white" : "text-gray-800"} text-sm font-medium`}
+                    >
                       {item.direction === "out"
                         ? `Sent to @${item.to}`
                         : `Received from @${item.from}`}
                     </p>
-                    <p className="text-xs text-gray-500">{item.date}</p>
-                    {/* <span className="text-xs text-gray-500 mt-0.5">
-                      {item.status === "Pending" ? "⏳ Pending" : item.status === "Success" ? "✅ Completed" : "❌ Failed"}
-                    </span> */}
+                    <p className="text-xs text-gray-400">{item.date}</p>
                   </div>
                   <div
                     className={`text-sm font-semibold ${
-                      item.direction === "out" ? "text-red-500" : "text-green-600"
+                      item.direction === "out" ? "text-red-500" : "text-green-400"
                     }`}
                   >
                     {item.direction === "out" ? "-" : "+"}
@@ -243,53 +295,48 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Invite & Earn */}
-        <button className="w-full flex items-center justify-between px-4 py-3 mt-4 bg-blue-50 border border-blue-200 text-sm text-blue-700 rounded-xl">
+        {/* Invite CTA */}
+        {/* {`${darkMode ? "bg-[#0D0E12] text-white" : "bg-white text-black"} min-h-screen py-6 px-4 sm:px-6 lg:px-8 font-sans`} */}
+        <button
+          className={`${darkMode ? "bg-[#10141C] border-gray-700" : "bg-blue-50 border-blue-200"} w-full flex items-center justify-between px-4 py-3 mt-4 border  text-sm text-blue-400 rounded-xl`}
+        >
           <span>Invite & Earn</span>
           <span>→</span>
         </button>
-
-        {/* Logout */}
-        {/* <div>
-          <Button
-            variant="outline"
-            onClick={signOut}
-            className="mt-6 text-red-600 border-red-600 hover:bg-red-50 w-full"
-          >
-            {t("logout")}
-          </Button>
-        </div> */}
       </div>
       {selectedTx && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4">
-            <h3 className="text-lg font-bold">Transaction Details</h3>
-            <p className="text-sm">
+          <div
+            className={`${darkMode ? "bg-[#1C1F26]" : "bg-white"} p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4`}
+          >
+            <h3 className={`${darkMode ? "text-white" : ""} text-lg font-bold`}>
+              Transaction Details
+            </h3>
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>Type:</strong> {selectedTx.direction === "out" ? "Sent" : "Received"}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>To:</strong> {truncate(selectedTx.to)}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>From:</strong> {truncate(selectedTx.from)}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>Amount:</strong> {selectedTx.value}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>Date:</strong> {selectedTx.date}
             </p>
             <p className="text-sm">
               <strong>Status:</strong>{" "}
               {selectedTx.status === "Success" && (
-                <span className="text-green-600">✅ Completed</span>
+                <span className="text-green-400">✅ Completed</span>
               )}
               {selectedTx.status === "Pending" && (
-                <span className="text-yellow-500">⏳ Pending</span>
+                <span className="text-yellow-400">⏳ Pending</span>
               )}
-              {selectedTx.status === "Failed" && <span className="text-red-500">❌ Failed</span>}
+              {selectedTx.status === "Failed" && <span className="text-red-400">❌ Failed</span>}
             </p>
-
             <div className="pt-4">
               <Button onClick={() => setSelectedTx(null)} className="w-full">
                 Close
@@ -298,22 +345,28 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* Subscription Details Modal */}
       {selectedSubscription && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4">
-            <h3 className="text-lg font-bold">Subscription Details</h3>
-            <p className="text-sm">
+          <div
+            className={`${darkMode ? "bg-[#1C1F26]" : "bg-white"} p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4`}
+          >
+            <h3 className={`${darkMode ? "text-white" : ""} text-lg font-bold`}>
+              Subscription Details
+            </h3>
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>To:</strong> {selectedSubscription.handle}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>Description:</strong> {selectedSubscription.description}
             </p>
-            <p className="text-sm">
+            <p className={`${darkMode ? "text-white" : ""} text-sm`}>
               <strong>Next Payment:</strong> {selectedSubscription.nextPayment}
             </p>
-            <p className="text-sm text-gray-500">
-              This is a mock subscription. In the future, we will be able to manage, pause, or
-              update your subscriptions.
+            <p className="text-sm text-gray-400">
+              This is your subscription. In the future, you will be able to manage, pause, or update
+              your subscriptions.
             </p>
             <div className="pt-4">
               <Button onClick={() => setSelectedSubscription(null)} className="w-full">
@@ -323,7 +376,9 @@ export default function HomePage() {
           </div>
         </div>
       )}
-      <footer className="text-center text-xs text-gray-400 mt-12 pb-6">
+
+      {/* Footer */}
+      <footer className="text-center text-xs text-gray-500 mt-12 pb-6">
         © 2025 DaxFi. All rights reserved. Test Environment.
       </footer>
     </main>
@@ -345,17 +400,14 @@ function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex flex-col items-center justify-center p-4 rounded-xl shadow-sm transition-all text-sm font-medium space-y-2
+      className={`flex flex-col items-center justify-center px-2 py-2 rounded-xl shadow-sm transition-all text-[10px] font-medium space-y-0.5
         ${
           disabled
-            ? "opacity-50 cursor-not-allowed bg-gray-100"
+            ? "opacity-50 cursor-not-allowed bg-gray-800 text-gray-500"
             : "bg-gradient-to-r from-[#005AE2] to-[#0074FF] text-white hover:shadow-lg hover:brightness-110 cursor-pointer"
         }`}
-      title={
-        label === "Top Up" && disabled ? "Coming soon — fiat cash-out via on-ramp partners." : ""
-      }
     >
-      <div className="text-xl">{icon}</div>
+      <div className="text-sm">{icon}</div>
       <span>{label}</span>
     </button>
   );

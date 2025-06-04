@@ -15,7 +15,9 @@
     "noRecentActivity": "You haven't made any transactions yet.",
     "sendFirstTransfer": "Send your first transfer",
     "logout": "Logout",
-    "withdraw": "Withdraw"
+    "withdraw": "Withdraw",
+    "newSubscription": "New Subscription",
+    "scanQrCode": "Scan QR"
   },
   "send": {
     "addNote": "Add a note",
