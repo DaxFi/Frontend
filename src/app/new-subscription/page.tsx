@@ -9,17 +9,12 @@ const MOCK_CREATORS = [
   {
     handle: "@filmtub",
     image: "/movie.png",
-    pricing: { weekly: 2, monthly: 5, yearly: 50 },
+    pricing: { weekly: 2.0, monthly: 5.0, yearly: 50.0 },
   },
   {
     handle: "@frenchwithmarie",
     image: "/france.png",
-    pricing: { weekly: 3, monthly: 6, yearly: 60 },
-  },
-  {
-    handle: "@indiecoffee",
-    image: "/coffee.png",
-    pricing: { weekly: 1.5, monthly: 4, yearly: 45 },
+    pricing: { weekly: 30.0, monthly: 240.0, yearly: "2,880.00" },
   },
 ];
 
@@ -136,7 +131,7 @@ export default function NewSubscriptionPage() {
               ? "bg-gradient-to-r from-[#005AE2] to-[#0074FF] hover:brightness-110"
               : "bg-gray-500 cursor-not-allowed opacity-50"
           }`}
-          onClick={() => alert("Mock: Subscribed!")}
+          onClick={() => router.push("confirm-subscription")}
           disabled={!selectedHandle || !selectedPlan}
         >
           Review & Subscribe
