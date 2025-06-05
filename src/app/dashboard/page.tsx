@@ -243,7 +243,7 @@ export default function HomePage() {
             ))}
           </ul> */}
           <p className="text-lg text-gray-500 pt-1 text-center">
-            You don not have any subscriptions yet.
+            You do not have any subscriptions yet.
           </p>
           <p className="text-xs text-gray-500 pt-4 text-center">
             All payments are feeless and processed by DaxFi.
