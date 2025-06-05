@@ -36,7 +36,9 @@ export default function HomePage() {
   const [balance, setBalance] = useState<bigint | null>(null);
   const [transactions, setTransactions] = useState<ParsedTransaction[] | undefined>();
   const [selectedTx, setSelectedTx] = useState<ParsedTransaction | null>(null);
+
   const [showMenu, setShowMenu] = useState(false);
+  const [showBalanceDetails, setShowBalanceDetails] = useState(false);
 
   const { theme, toggleTheme } = useTheme();
   const darkMode = theme === "dark";
@@ -121,7 +123,8 @@ export default function HomePage() {
         </div>
         {/* Balance card */}
         <div
-          className={`${darkMode ? "bg-[#16181D]" : "bg-gray-50"} p-6 rounded-2xl shadow-md text-center`}
+          onClick={() => setShowBalanceDetails(true)}
+          className={`${darkMode ? "bg-[#16181D]" : "bg-gray-50"} p-6 rounded-2xl shadow-md text-center cursor-pointer hover:brightness-105 transition`}
         >
           {balance === null ? (
             <>
@@ -373,6 +376,35 @@ export default function HomePage() {
             </p>
             <div className="pt-4">
               <Button onClick={() => setSelectedSubscription(null)} className="w-full">
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showBalanceDetails && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div
+            className={`${darkMode ? "bg-[#1C1F26] text-white" : "bg-white text-black"} p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4`}
+          >
+            <h3 className="text-lg font-bold">Account Details</h3>
+            <p>
+              <strong>Stablecoin:</strong> USDC
+            </p>
+            <p>
+              <strong>Name:</strong> {"Luiz"}
+            </p>
+            <p>
+              <strong>Email:</strong> {user?.email || "Unknown"}
+            </p>
+            <p>
+              <strong>Handle:</strong> @{user?.email?.split("@")[0]}
+            </p>
+            <p>
+              <strong>Wallet:</strong> ****{user?.address.slice(-6)}
+            </p>
+            <div className="pt-4">
+              <Button onClick={() => setShowBalanceDetails(false)} className="w-full">
                 Close
               </Button>
             </div>
