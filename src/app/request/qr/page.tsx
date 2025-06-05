@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 import { useUser } from "@account-kit/react";
 import { useTranslations } from "next-intl";
@@ -24,7 +24,9 @@ export default function ConfirmRequestPage() {
   const message = params.get("message") || "";
   const recipient = user?.email;
 
-  const requestLink = `${baseUrl}/confirm-transaction?recipient=${recipient}&amount=${amount}&message=${message}`;
+  const requestLink = `${baseUrl}/confirm-transaction?recipient=${encodeURIComponent(
+    recipient || "",
+  )}&amount=${encodeURIComponent(amount)}&message=${encodeURIComponent(message)}`;
 
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
@@ -45,15 +47,26 @@ export default function ConfirmRequestPage() {
         }`}
       >
         {/* Back */}
-        <button
-          onClick={() => router.back()}
-          className={`text-sm flex items-center gap-1 cursor-pointer hover:text-blue-500 ${
-            isDark ? "text-gray-300" : "text-gray-500"
-          }`}
-        >
-          <FaArrowLeft size={14} />
-          {t("back")}
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={() => router.back()}
+            className={`text-sm cursor-pointer flex items-center gap-1 hover:text-blue-500 ${
+              isDark ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            <FaArrowLeft size={14} />
+            Back
+          </button>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className={`text-xl transition-colors cursor-pointer hover:text-blue-500 ${
+              isDark ? "text-gray-400" : "text-gray-500"
+            }`}
+            aria-label="Close"
+          >
+            <FaTimes size={15} />
+          </button>
+        </div>
 
         {/* Title */}
         <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>

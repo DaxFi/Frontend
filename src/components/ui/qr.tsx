@@ -22,7 +22,7 @@ export default function DynamicDaxfiQR({ link }: { link: string }) {
     imageOptions: {
       crossOrigin: "anonymous",
       margin: 4,
-      imageSize: 0.75,
+      imageSize: 0.3,
     },
     cornersSquareOptions: {
       type: "extra-rounded",
