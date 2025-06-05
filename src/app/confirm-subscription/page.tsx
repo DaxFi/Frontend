@@ -21,7 +21,6 @@ export default function ReviewSubscriptionPage() {
   const bg = isDark ? "bg-[#0D0E12]" : "bg-gradient-to-br from-gray-50 to-gray-100";
   const card = isDark ? "bg-[#16181D]" : "bg-white";
   const text = isDark ? "text-white" : "text-gray-900";
-  const subtext = "text-sm text-gray-400";
 
   return (
     <main className={`min-h-screen flex items-center justify-center ${bg} py-16 px-4`}>

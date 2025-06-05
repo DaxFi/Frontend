@@ -13,9 +13,8 @@ export default function ScanQRPage() {
 
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader();
-    codeReader;
     codeReader
-      .decodeFromVideoDevice(null, videoRef.current!, (result, err) => {
+      .decodeFromVideoDevice(null, videoRef.current!, (result) => {
         if (result) {
           try {
             const url = new URL(result.getText());

@@ -15,7 +15,7 @@ import {
   FaQrcode,
 } from "react-icons/fa";
 import { useSigner, useUser } from "@account-kit/react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPublicClient, http } from "viem";
 import { baseWonderTestnet } from "@/config/chains";
 import { RPC_URL } from "@/lib/provider";
