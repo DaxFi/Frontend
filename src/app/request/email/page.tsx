@@ -4,32 +4,28 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp, query, getDocs, where } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useUser } from "@account-kit/react";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
+import { useAuth } from "@/components/providers/authProvider";
+import { useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/appThemeProvider";
 
 export default function RequestEmailPage() {
   const router = useRouter();
   const params = useSearchParams();
+  const t = useTranslations("requestEmail");
   const { theme } = useTheme();
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const amount = params.get("amount");
   const message = params.get("message");
 
   const user = useUser();
-
-  const getCurrentUserHandle = async () => {
-    if (!user) return null;
-    const userWalletAddress = user.address as `0x${string}`;
-    const q = query(collection(db, "users"), where("walletAddress", "==", userWalletAddress));
-    const snapshot = await getDocs(q);
-    const userData = snapshot.docs[0]?.data();
-    return userData ? userData.handle : null;
-  };
+  const { handle } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +39,6 @@ export default function RequestEmailPage() {
 
     try {
       if (!user) return;
-      const handle = await getCurrentUserHandle();
       await addDoc(collection(db, "requests"), {
         amount: Number(amount).toFixed(2),
         message: message || "",
@@ -53,8 +48,7 @@ export default function RequestEmailPage() {
         createdAt: serverTimestamp(),
       });
 
-      alert("Request sent!");
-      router.push("/dashboard");
+      setShowModal(true);
     } catch (err) {
       console.error("Firestore error:", err);
       alert("Failed to send request link.");
@@ -72,7 +66,7 @@ export default function RequestEmailPage() {
       }`}
     >
       <div
-        className={`w-full max-w-md rounded-xl shadow-md p-8 ${
+        className={`w-full max-w-md rounded-xl shadow-md p-8 relative ${
           isDark ? "bg-zinc-900 text-white" : "bg-white text-black"
         }`}
       >
@@ -84,7 +78,7 @@ export default function RequestEmailPage() {
             }`}
           >
             <FaArrowLeft size={14} />
-            Back
+            {t("back")}
           </button>
           <button
             onClick={() => router.push("/dashboard")}
@@ -97,7 +91,7 @@ export default function RequestEmailPage() {
           </button>
         </div>
 
-        <h1 className="text-2xl font-semibold text-center mb-8">Request</h1>
+        <h1 className="text-2xl font-semibold text-center mb-8">{t("title")}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -107,12 +101,12 @@ export default function RequestEmailPage() {
                 isDark ? "text-gray-300" : "text-gray-700"
               }`}
             >
-              Email
+              {t("emailLabel")}
             </label>
             <input
               id="email"
               type="email"
-              placeholder="Send link to"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-200 focus:outline-none ${
@@ -129,9 +123,26 @@ export default function RequestEmailPage() {
             className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition hover:brightness-110"
             disabled={loading}
           >
-            {loading ? "Sending..." : "Finish Request"}
+            {loading ? t("sending") : t("submit")}
           </Button>
         </form>
+
+        {showModal && (
+          <div className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-white p-6 rounded-xl shadow-lg text-center w-full max-w-sm mx-4">
+              <h2 className="text-xl font-semibold mb-2">{t("modalTitle")}</h2>
+              <p className="text-gray-600 mb-4">
+                {t("modalBody")} <strong>{email}</strong>.
+              </p>
+              <Button
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white"
+                onClick={() => router.push("/dashboard")}
+              >
+                {t("returnButton")}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { sendPayment } from "@/lib/payments";
-import { convertUSDToEther, resolveRecipientWalletAddress } from "@/lib/utils";
+import { convertUSDToEther, isOnDaxFi, resolveRecipientWalletAddress } from "@/lib/utils";
 import { useSigner, useUser } from "@account-kit/react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, query, getDocs, where, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { sendPendingClaim } from "@/app/utils/contracts";
 import { useTheme } from "@/components/providers/appThemeProvider";
 
@@ -24,13 +24,6 @@ export default function ConfirmSendPage() {
 
   const signer = useSigner();
   const user = useUser();
-
-  const isOnDaxFi = async (recipientEmail: string): Promise<boolean> => {
-    const q = query(collection(db, "users"), where("email", "==", recipientEmail));
-    const snapshot = await getDocs(q);
-    const userData = snapshot.docs[0]?.data();
-    return userData !== undefined;
-  };
 
   const handleConfirm = async () => {
     setIsSending(true);
@@ -105,7 +98,7 @@ export default function ConfirmSendPage() {
           <Button
             onClick={handleConfirm}
             disabled={isSending}
-            className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition"
+            className="w-full bg-gradient-to-r from-[#005AE2] to-[#0074FF] font-semibold py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition"
           >
             {isSending ? (
               <svg

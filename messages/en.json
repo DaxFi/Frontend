@@ -66,6 +66,17 @@
     "messagePlaceholder": "Message",
     "createRequest": "Create Request"
   },
+  "requestEmail": {
+    "title": "Request",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Send link to",
+    "submit": "Finish Request",
+    "sending": "Sending...",
+    "modalTitle": "Request Sent",
+    "modalBody": "An email request was sent to",
+    "returnButton": "Return to Dashboard",
+    "back": "Back"
+  },
   "qr": {
     "back": "Back",
     "title": "Request",
