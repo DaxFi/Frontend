@@ -43,19 +43,19 @@ export default function HomePage() {
   const { theme, toggleTheme } = useTheme();
   const darkMode = theme === "dark";
 
-  // const mockSubscriptions = [
-  //   { handle: "@filmtub", image: "/movie.png", description: "FilmClub+", nextPayment: "Aug 15" },
-  //   {
-  //     handle: "@frenchwithmarie",
-  //     image: "/france.png",
-  //     description: "French with Marie",
-  //     nextPayment: "Aug 1",
-  //   },
-  // ];
+  const mockSubscriptions = [
+    { handle: "@filmtub", image: "/movie.png", description: "FilmClub+", nextPayment: "Aug 15" },
+    {
+      handle: "@frenchwithmarie",
+      image: "/france.png",
+      description: "French with Marie",
+      nextPayment: "Aug 1",
+    },
+  ];
 
-  // const [selectedSubscription, setSelectedSubscription] = useState<
-  //   (typeof mockSubscriptions)[0] | null
-  // >(null);
+  const [selectedSubscription, setSelectedSubscription] = useState<
+    (typeof mockSubscriptions)[0] | null
+  >(null);
 
   const fetchTransactions = async (address: `0x${string}`) => {
     try {
@@ -162,7 +162,6 @@ export default function HomePage() {
               icon: <FaSyncAlt size={16} />,
               label: t("newSubscription"),
               onClick: () => router.push("/new-subscription"),
-              disabled: true,
             },
           ].map((btn, i) => (
             <ActionButton
@@ -206,7 +205,7 @@ export default function HomePage() {
           <h3 className={`${darkMode ? "text-white" : "text-gray-800"} text-lg font-semibold mb-4`}>
             Your Subscriptions
           </h3>
-          {/* <ul className={`${darkMode ? "divide-y divide-gray-800" : ""}`}>
+          <ul className={`${darkMode ? "divide-y divide-gray-800" : ""}`}>
             {mockSubscriptions.map((sub, i) => (
               <li
                 key={i}
@@ -241,10 +240,10 @@ export default function HomePage() {
                 </div>
               </li>
             ))}
-          </ul> */}
-          <p className="text-lg text-gray-500 pt-1 text-center">
+          </ul>
+          {/* <p className="text-lg text-gray-500 pt-1 text-center">
             You do not have any subscriptions yet.
-          </p>
+          </p> */}
           <p className="text-xs text-gray-500 pt-4 text-center">
             All payments are feeless and processed by DaxFi.
           </p>
@@ -356,7 +355,7 @@ export default function HomePage() {
       )}
 
       {/* Subscription Details Modal */}
-      {/* {selectedSubscription && (
+      {selectedSubscription && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div
             className={`${darkMode ? "bg-[#1C1F26]" : "bg-white"} p-6 rounded-xl max-w-sm w-full shadow-lg space-y-4`}
@@ -384,7 +383,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      )} */}
+      )}
       {showBalanceDetails && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div
